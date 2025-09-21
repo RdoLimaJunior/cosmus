@@ -1,0 +1,5 @@
+{
+  "name": "Vanda Study App",
+  "description": "An educational application designed to help students prepare for the Vanda International Science Competition. It features study materials, practice tests, performance tracking, and an AI-powered tutor chatbot.",
+  "requestFramePermissions": []
+}

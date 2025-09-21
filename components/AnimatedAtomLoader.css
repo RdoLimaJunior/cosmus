@@ -1,0 +1,76 @@
+
+.atom-loader {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.atom-nucleus {
+    width: 20px;
+    height: 20px;
+    background-color: #ec4899; /* secondary color */
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ec4899;
+}
+
+.atom-orbit {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #0ea5e9; /* primary color */
+    border-radius: 50%;
+    animation: rotate 3s linear infinite;
+}
+
+.atom-orbit:nth-child(2) {
+    transform: rotate(120deg);
+    animation-delay: -1s;
+}
+.atom-orbit:nth-child(3) {
+    transform: rotate(240deg);
+    animation-delay: -2s;
+}
+.atom-orbit:nth-child(4) {
+    transform: rotate(360deg);
+    animation-delay: -3s;
+}
+
+
+.atom-electron {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    background-color: #38bdf8; /* primary-light */
+    border-radius: 50%;
+    box-shadow: 0 0 8px #38bdf8;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotateZ(0deg) rotateX(60deg) rotateY(0deg);
+    }
+    100% {
+        transform: rotateZ(360deg) rotateX(60deg) rotateY(0deg);
+    }
+}
+
+/* Dark mode adjustments if needed */
+.dark .atom-nucleus {
+    background-color: #f472b6; /* secondary-light */
+    box-shadow: 0 0 10px #f472b6;
+}
+.dark .atom-orbit {
+    border-color: #38bdf8; /* primary-light */
+}
+.dark .atom-electron {
+    background-color: #0ea5e9; /* primary */
+    box-shadow: 0 0 8px #0ea5e9;
+}

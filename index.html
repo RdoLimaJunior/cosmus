@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cosmus: Guia de Estudos Galáctico</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['"Space Mono"', 'monospace'],
+                    mono: ['"Space Mono"', 'monospace'],
+                },
+                colors: {
+                    background: {
+                        dark: '#000000',
+                        light: '#F3F4F6',
+                    },
+                    surface: {
+                        dark: '#111111',
+                        light: '#FFFFFF',
+                    },
+                    text: {
+                        dark: '#E5E7EB',
+                        light: '#1F2937',
+                    },
+                    muted: {
+                        dark: '#6B7280',
+                        light: '#6B7280',
+                    },
+                    primary: {
+                        DEFAULT: '#0AF', // Electric Cyan
+                        light: '#67E8F9',
+                        dark: '#08D',
+                    },
+                    secondary: {
+                        DEFAULT: '#EC4899',
+                        light: '#F472B6',
+                        dark: '#D946EF',
+                    }
+                },
+                animation: {
+                    'pulse-glow': 'pulse-glow 3s infinite ease-in-out',
+                    'line-flow': 'line-flow 5s linear infinite',
+                },
+                keyframes: {
+                    'pulse-glow': {
+                        '0%, 100%': { opacity: 0.7, transform: 'scale(1)' },
+                        '50%': { opacity: 1, transform: 'scale(1.05)' },
+                    },
+                    'line-flow': {
+                        '0%': { 'stroke-dashoffset': 20 },
+                        '100%': { 'stroke-dashoffset': 0 },
+                    },
+                }
+            },
+        },
+    };
+    </script>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://aistudiocdn.com/react@^19.1.1",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+        "react/": "https://aistudiocdn.com/react@^19.1.1/",
+        "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.1",
+        "recharts": "https://aistudiocdn.com/recharts@^3.2.1",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.20.0"
+      }
+    }
+    </script>
+</head>
+<body class="bg-background-dark">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
