@@ -77,7 +77,7 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ selectedBody }) => {
         <>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`fixed bottom-24 md:bottom-5 right-5 z-50 p-4 border-2 border-white transition-transform transform hover:scale-110 ${
+                className={`fixed bottom-24 md:bottom-5 right-5 z-[60] p-4 border-2 border-white transition-transform transform hover:scale-110 ${
                     isOpen ? 'bg-red-500 hover:bg-red-600' : 'bg-primary hover:bg-primary-dark'
                 }`}
                 aria-label={isOpen ? t('closeChat') : t('openChat')}
@@ -86,7 +86,7 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ selectedBody }) => {
             </button>
 
             {isOpen && (
-                <div className="fixed bottom-24 md:bottom-20 right-5 z-40 w-full max-w-sm h-[500px] bg-black/80 border-2 border-primary/50 flex flex-col animate-fade-in-up">
+                <div className="fixed bottom-24 md:bottom-20 right-5 z-[60] w-full max-w-sm h-[500px] bg-black/80 border-2 border-primary/50 flex flex-col animate-fade-in-up">
                     <header className="p-4 border-b-2 border-primary/30 flex items-center gap-3">
                         <BotIcon className="w-6 h-6 text-primary-light" />
                         <h3 className="font-bold text-white uppercase text-sm">{t('chatTutorName')}</h3>

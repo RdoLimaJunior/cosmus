@@ -1,3 +1,6 @@
+// Fix: Import ComponentType to resolve 'Cannot find namespace React' error.
+import type { ComponentType } from 'react';
+
 export enum Subject {
   Biology = 'Biology',
   Chemistry = 'Chemistry',
@@ -58,7 +61,8 @@ export interface ChatMessage {
 export interface Rank {
   nameKey: string;
   minLevel: number;
-  icon: React.ComponentType<{ className?: string }>;
+  // Fix: Use ComponentType directly now that it's imported.
+  icon: ComponentType<{ className?: string }>;
 }
 
 export interface Quiz {

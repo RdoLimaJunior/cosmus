@@ -173,7 +173,7 @@ const ModuleView: React.FC<ModuleViewProps> = ({ body, onClose, onNextModule }) 
     );
 
     return (
-        <div className="fixed inset-0 z-30 bg-background-dark/95 flex flex-col p-4 sm:p-8 animate-fade-in">
+        <div className="fixed inset-0 z-50 bg-background-dark/95 flex flex-col p-4 sm:p-8 animate-fade-in">
             <header className="flex-shrink-0 flex items-center justify-between pb-4 border-b-2 border-primary/30">
                 <div>
                     <span className="text-sm uppercase text-primary-light">{t(body.subject.toLowerCase())}</span>

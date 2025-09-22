@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -47,8 +44,8 @@ const AppHeader: React.FC = () => {
     }, []);
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-40 p-2 sm:p-4">
-            <div className="container mx-auto flex justify-between items-center bg-black/80 p-2 sm:p-3 border-2 border-white/20">
+        <header className="fixed top-0 left-0 right-0 z-20 p-2 sm:p-4">
+            <div className="container mx-auto flex justify-between items-center bg-black/80 p-2 sm:p-3 border-2 border-white/20 backdrop-blur-md">
                 <div className="flex items-center gap-3">
                     <RankIcon className="w-8 h-8 text-primary-light hidden sm:block" />
                     <div className="flex-grow">

@@ -1,6 +1,4 @@
 
-
-
 import React, { useState } from 'react';
 import { CelestialBody } from '../types';
 import { celestialBodies as initialCelestialBodies } from '../data/mockData';
@@ -34,21 +32,39 @@ const Study: React.FC = () => {
         }
     };
 
-    const completeModule = (bodyToComplete: CelestialBody) => {
-        const bodyInState = celestialBodies.find(b => b.id === bodyToComplete.id);
-        if (!bodyInState || bodyInState.isCompleted) return;
+    const endStudySession = (currentBody: CelestialBody | null) => {
+        if (!currentBody || !moduleStartTime) return;
 
-        addXp(75); // Award XP for module completion
-        setCelestialBodies(prevBodies => prevBodies.map(b => 
-            b.id === bodyToComplete.id ? { ...b, isCompleted: true } : b
-        ));
+        const durationInMillis = Date.now() - moduleStartTime;
+        const durationInSeconds = durationInMillis / 1000;
+
+        // Define XP rewards and conditions
+        const XP_PER_SECOND = 1;
+        const MAX_TIME_XP = 120;
+        const COMPLETION_BONUS_XP = 50;
+        const MIN_DURATION_FOR_COMPLETION = 30; // seconds
+
+        // 1. Award XP for the duration of the study session
+        const timeXp = Math.min(Math.floor(durationInSeconds * XP_PER_SECOND), MAX_TIME_XP);
+        if (timeXp > 0) {
+            addXp(timeXp);
+        }
+        
+        // 2. Award a fixed bonus for completing a module for the first time
+        const bodyInState = celestialBodies.find(b => b.id === currentBody.id);
+        
+        if (bodyInState && !bodyInState.isCompleted && durationInSeconds >= MIN_DURATION_FOR_COMPLETION) {
+            // This bonus is awarded in addition to the time-based XP
+            addXp(COMPLETION_BONUS_XP); 
+            setCelestialBodies(prevBodies => prevBodies.map(b => 
+                b.id === currentBody.id ? { ...b, isCompleted: true } : b
+            ));
+        }
     };
 
+
     const handleCloseModuleView = () => {
-        const MIN_STUDY_DURATION = 5000; // 5 seconds for a "successful" session.
-        if (studyingBody && moduleStartTime && (Date.now() - moduleStartTime > MIN_STUDY_DURATION)) {
-            completeModule(studyingBody);
-        }
+        endStudySession(studyingBody);
         setStudyingBody(null);
         setModuleStartTime(null);
     };
@@ -58,15 +74,10 @@ const Study: React.FC = () => {
     };
     
     const handleNextModule = (nextModuleId: string) => {
-        const currentBody = studyingBody;
+        endStudySession(studyingBody);
+
         const nextBody = celestialBodies.find(m => m.id === nextModuleId);
-
-        if (nextBody && currentBody) {
-            const MIN_STUDY_DURATION = 5000; // 5 seconds
-            if (moduleStartTime && (Date.now() - moduleStartTime > MIN_STUDY_DURATION)) {
-                completeModule(currentBody);
-            }
-
+        if (nextBody) {
             setStudyingBody(null);
             setModuleStartTime(null);
             setMissionTarget(nextBody);

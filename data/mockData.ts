@@ -217,17 +217,35 @@ export const badges: Badge[] = [
   }
 ];
 
+// Helper to format date as YYYY-MM-DD
+const formatDate = (date: Date): string => {
+    const d = new Date(date);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().split('T')[0];
+};
+
+const today = new Date();
+const d1 = new Date(); d1.setDate(today.getDate() - 1);
+const d2 = new Date(); d2.setDate(today.getDate() - 2);
+const d5 = new Date(); d5.setDate(today.getDate() - 5);
+const d10 = new Date(); d10.setDate(today.getDate() - 10);
+const d15 = new Date(); d15.setDate(today.getDate() - 15);
+
+// Ensure dates are within the current month for calendar view simplicity
+if (d10.getMonth() !== today.getMonth()) d10.setDate(today.getDate() - 7);
+if (d15.getMonth() !== today.getMonth()) d15.setDate(today.getDate() - 8);
+
 export const performanceHistory: PerformanceData[] = [
-  { date: "2023-10-01", subject: Subject.Biology, score: 60 },
-  { date: "2023-10-01", subject: Subject.Chemistry, score: 75 },
-  { date: "2023-10-01", subject: Subject.Physics, score: 50 },
-  { date: "2023-10-08", subject: Subject.Biology, score: 70 },
-  { date: "2023-10-08", subject: Subject.Chemistry, score: 70 },
-  { date: "2023-10-08", subject: Subject.Physics, score: 65 },
-  { date: "2023-10-15", subject: Subject.Biology, score: 85 },
-  { date: "2023-10-15", subject: Subject.Chemistry, score: 65 },
-  { date: "2023-10-15", subject: Subject.Physics, score: 75 },
-];
+  { date: formatDate(d15), subject: Subject.Biology, score: 60 },
+  { date: formatDate(d10), subject: Subject.Chemistry, score: 70 },
+  { date: formatDate(d10), subject: Subject.Physics, score: 65 },
+  { date: formatDate(d5), subject: Subject.Physics, score: 75 },
+  { date: formatDate(d2), subject: Subject.Biology, score: 85 },
+  { date: formatDate(d1), subject: Subject.Chemistry, score: 80 },
+  { date: formatDate(d1), subject: Subject.Physics, score: 90 },
+  { date: formatDate(today), subject: Subject.Biology, score: 95 },
+].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
 
 export const quizzes: Quiz[] = [
   {

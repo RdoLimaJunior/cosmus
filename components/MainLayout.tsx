@@ -1,7 +1,3 @@
-
-
-
-
 import React, { ReactNode, useEffect } from 'react';
 import AppHeader from './AppHeader';
 import Starfield from './Starfield';
@@ -22,7 +18,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background-dark text-text-dark font-sans text-sm">
+    <div className="min-h-screen bg-background-dark text-text-dark font-sans text-sm flex flex-col">
       {unlockedRank && (
         <LevelUpNotification 
           rank={unlockedRank} 
@@ -32,11 +28,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <Starfield />
       <AppHeader />
       {/* 
-        Main content area with padding-top to account for the fixed AppHeader 
-        and padding-bottom for the fixed BottomNavBar.
-        The `h-screen` and `flex` properties ensure the content area fills the available space.
+        Main content area with padding-bottom for the fixed BottomNavBar.
+        `flex-grow` allows this area to fill the available space between the header and footer.
+        Removed relative z-10 to allow fixed modals inside to create their own root stacking context.
       */}
-      <main className="relative z-10 flex flex-col h-screen pt-20 pb-20 px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow flex flex-col pt-24 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto flex-grow h-full animate-fade-in">
           {children}
         </div>

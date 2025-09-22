@@ -1,6 +1,3 @@
-
-
-
 import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppContextProvider } from './context/AppContext';
@@ -28,7 +25,7 @@ const App: React.FC = () => {
         <HashRouter>
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
-              <Route path="/" element={<Navigate to="/study" />} />
+              <Route path="/" element={<Navigate to="/performance" />} />
               <Route path="/study" element={<MainLayout><Study /></MainLayout>} />
               <Route path="/practice" element={<MainLayout><Practice /></MainLayout>} />
               <Route path="/performance" element={<MainLayout><Performance /></MainLayout>} />
