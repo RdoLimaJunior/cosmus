@@ -1,11 +1,7 @@
 import React from 'react';
 
 export const SparklesIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="m12 3-1.9 4.8-4.8 1.9 4.8 1.9 1.9 4.8 1.9-4.8 4.8-1.9-4.8-1.9L12 3z"/>
-    <path d="M5 3v4"/>
-    <path d="M19 17v4"/>
-    <path d="M3 5h4"/>
-    <path d="M17 19h4"/>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props} shapeRendering="crispEdges">
+    <path d="M11 4h2v3h-2V4zM4 6h3v2H4V6zm13 0h3v2h-3V6zM11 17h2v3h-2v-3zM7 16h2v3H7v-3zm10 0h2v3h-2v-3zM12 9l-2 4h4l-2-4z" />
   </svg>
 );

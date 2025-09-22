@@ -1,5 +1,17 @@
 {
-  "name": "Vanda Study App",
+  "name": "Cosmus: Guia de Estudos Galáctico",
+  "short_name": "Cosmus",
   "description": "An educational application designed to help students prepare for the Vanda International Science Competition. It features study materials, practice tests, performance tracking, and an AI-powered tutor chatbot.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    }
+  ],
   "requestFramePermissions": []
 }

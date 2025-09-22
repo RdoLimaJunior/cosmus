@@ -1,161 +1,108 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { StudyModule } from '../types';
-import { studyModules } from '../data/mockData';
-import StarMap from '../components/StarMap';
+
+
+
+import React, { useState } from 'react';
+import { CelestialBody } from '../types';
+import { celestialBodies as initialCelestialBodies } from '../data/mockData';
+import { useAppContext } from '../context/AppContext';
+import { useUserProgress } from '../context/UserProgressContext';
+import SectorMap from '../components/SectorMap';
 import MissionBriefingPanel from '../components/MissionBriefingPanel';
 import ModuleView from '../components/ModuleView';
 import ChatbotWidget from '../components/ChatbotWidget';
-import { useAppContext } from '../context/AppContext';
 
-const ZOOM_SENSITIVITY = 0.001;
-const MIN_ZOOM = 0.3;
-const MAX_ZOOM = 2.5;
 
 const Study: React.FC = () => {
     const { t } = useAppContext();
-    const [modules] = useState<StudyModule[]>(studyModules);
-    const [selectedModule, setSelectedModule] = useState<StudyModule | null>(null);
-    const [viewingModule, setViewingModule] = useState<StudyModule | null>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-    
-    const [view, setView] = useState({ x: 0, y: 0, zoom: 1 });
-    const [isDragging, setIsDragging] = useState(false);
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const { addXp } = useUserProgress();
+    const [celestialBodies, setCelestialBodies] = useState<CelestialBody[]>(initialCelestialBodies);
+    const [missionTarget, setMissionTarget] = useState<CelestialBody | null>(null);
+    const [studyingBody, setStudyingBody] = useState<CelestialBody | null>(null);
+    const [moduleStartTime, setModuleStartTime] = useState<number | null>(null);
 
-    // Force dark theme for the sci-fi aesthetic
-    useEffect(() => {
-        document.documentElement.classList.add('dark');
-    }, []);
-
-    const mapBounds = useMemo(() => {
-        if (modules.length === 0) return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
-        const padding = 150; // px padding around the content
-        const xs = modules.map(m => m.x);
-        const ys = modules.map(m => m.y);
-        return {
-            minX: Math.min(...xs) - padding,
-            minY: Math.min(...ys) - padding,
-            maxX: Math.max(...xs) + padding,
-            maxY: Math.max(...ys) + padding,
-        };
-    }, [modules]);
-    
-    // Center on the next available module on initial load
-    useEffect(() => {
-        const nextModule = modules.find(m => !m.isCompleted) || modules[0];
-        if (nextModule && containerRef.current) {
-            const { width, height } = containerRef.current.getBoundingClientRect();
-            setView({
-                x: -nextModule.x + width / 2,
-                y: -nextModule.y + height / 2,
-                zoom: 1,
-            });
-        }
-    }, [modules]);
-
-
-    const handleSelectModule = (module: StudyModule) => {
-        setSelectedModule(module);
-    };
-
-    const handleLaunch = () => {
-        if (selectedModule) {
-            setViewingModule(selectedModule);
-            setSelectedModule(null);
+    const handleSelectBody = (body: CelestialBody) => {
+        if (!studyingBody) {
+            setMissionTarget(body);
         }
     };
 
-    const handleExitModuleView = () => {
-        setViewingModule(null);
+    const handleLaunchMission = () => {
+        if (missionTarget) {
+            setStudyingBody(missionTarget);
+            setMissionTarget(null);
+            setModuleStartTime(Date.now());
+        }
     };
-    
+
+    const completeModule = (bodyToComplete: CelestialBody) => {
+        const bodyInState = celestialBodies.find(b => b.id === bodyToComplete.id);
+        if (!bodyInState || bodyInState.isCompleted) return;
+
+        addXp(75); // Award XP for module completion
+        setCelestialBodies(prevBodies => prevBodies.map(b => 
+            b.id === bodyToComplete.id ? { ...b, isCompleted: true } : b
+        ));
+    };
+
+    const handleCloseModuleView = () => {
+        const MIN_STUDY_DURATION = 5000; // 5 seconds for a "successful" session.
+        if (studyingBody && moduleStartTime && (Date.now() - moduleStartTime > MIN_STUDY_DURATION)) {
+            completeModule(studyingBody);
+        }
+        setStudyingBody(null);
+        setModuleStartTime(null);
+    };
+
     const handleCloseBriefing = () => {
-        setSelectedModule(null);
+        setMissionTarget(null);
     };
     
-    const handleWheel = useCallback((e: React.WheelEvent) => {
-        e.preventDefault();
-        if (!containerRef.current) return;
-        const { deltaY } = e;
-        const zoomDelta = -deltaY * ZOOM_SENSITIVITY;
+    const handleNextModule = (nextModuleId: string) => {
+        const currentBody = studyingBody;
+        const nextBody = celestialBodies.find(m => m.id === nextModuleId);
 
-        setView(prevView => {
-            const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prevView.zoom * (1 + zoomDelta)));
-            
-            const rect = containerRef.current!.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+        if (nextBody && currentBody) {
+            const MIN_STUDY_DURATION = 5000; // 5 seconds
+            if (moduleStartTime && (Date.now() - moduleStartTime > MIN_STUDY_DURATION)) {
+                completeModule(currentBody);
+            }
 
-            const worldX = (mouseX - prevView.x) / prevView.zoom;
-            const worldY = (mouseY - prevView.y) / prevView.zoom;
-            
-            let newX = mouseX - worldX * newZoom;
-            let newY = mouseY - worldY * newZoom;
-            
-            return { x: newX, y: newY, zoom: newZoom };
-        });
-    }, []);
+            setStudyingBody(null);
+            setModuleStartTime(null);
+            setMissionTarget(nextBody);
+        }
+    };
 
-    const handleMouseDown = useCallback((e: React.MouseEvent) => {
-        e.preventDefault();
-        setIsDragging(true);
-        setView(prevView => {
-            setDragStart({ x: e.clientX - prevView.x, y: e.clientY - prevView.y });
-            return prevView;
-        });
-    }, []);
-
-    const handleMouseMove = useCallback((e: React.MouseEvent) => {
-        if (!isDragging) return;
-        e.preventDefault();
-        setView(prev => ({
-            ...prev,
-            x: e.clientX - dragStart.x,
-            y: e.clientY - dragStart.y,
-        }));
-    }, [isDragging, dragStart]);
-
-    const handleMouseUp = useCallback(() => {
-        setIsDragging(false);
-    }, []);
 
     return (
-        <div className="min-h-screen bg-background-dark text-text-dark font-sans overflow-hidden">
-            <div 
-                ref={containerRef}
-                className="relative w-full h-screen select-none"
-                onWheel={handleWheel}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-            >
-                <StarMap 
-                    modules={modules} 
-                    onSelectModule={handleSelectModule} 
-                    activeModuleId={selectedModule?.id}
-                    view={view}
+        <>
+            <div className="relative w-full h-full">
+                <h1 className="sr-only">{t('navSectorMap')}</h1>
+                <SectorMap
+                    bodies={celestialBodies}
+                    onSelectBody={handleSelectBody}
+                    activeBodyId={missionTarget?.id}
                 />
             </div>
-            
-            {selectedModule && (
-                <MissionBriefingPanel 
-                    module={selectedModule} 
-                    onLaunch={handleLaunch}
+
+            {missionTarget && !studyingBody && (
+                <MissionBriefingPanel
+                    body={missionTarget}
+                    onLaunch={handleLaunchMission}
                     onClose={handleCloseBriefing}
                 />
             )}
 
-            {viewingModule && (
+            {studyingBody && (
                 <ModuleView 
-                    module={viewingModule} 
-                    onExit={handleExitModuleView}
+                    body={studyingBody} 
+                    onClose={handleCloseModuleView} 
+                    onNextModule={handleNextModule}
                 />
             )}
-            
-            <ChatbotWidget selectedModule={viewingModule || selectedModule} />
-        </div>
+
+            <ChatbotWidget selectedBody={studyingBody} />
+        </>
     );
 };
 

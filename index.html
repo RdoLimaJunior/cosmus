@@ -4,8 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cosmus: Guia de Estudos Galáctico</title>
+    <link rel="manifest" href="/metadata.json" />
+    <meta name="theme-color" content="#000000" />
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -14,12 +16,12 @@
         theme: {
             extend: {
                 fontFamily: {
-                    sans: ['"Space Mono"', 'monospace'],
-                    mono: ['"Space Mono"', 'monospace'],
+                    sans: ['"Press Start 2P"', 'monospace'],
+                    mono: ['"Press Start 2P"', 'monospace'],
                 },
                 colors: {
                     background: {
-                        dark: '#000000',
+                        dark: '#080812',
                         light: '#F3F4F6',
                     },
                     surface: {
@@ -48,6 +50,10 @@
                 animation: {
                     'pulse-glow': 'pulse-glow 3s infinite ease-in-out',
                     'line-flow': 'line-flow 5s linear infinite',
+                    'fade-in': 'fade-in 0.3s steps(6, end) forwards',
+                    'launch-effect': 'launch-effect 0.7s ease-out forwards',
+                    'pulse-orbit': 'pulse-orbit 5s infinite ease-in-out',
+                    'scanline': 'scanline 10s linear infinite',
                 },
                 keyframes: {
                     'pulse-glow': {
@@ -58,6 +64,22 @@
                         '0%': { 'stroke-dashoffset': 20 },
                         '100%': { 'stroke-dashoffset': 0 },
                     },
+                    'fade-in': {
+                        '0%': { opacity: 0 },
+                        '100%': { opacity: 1 },
+                    },
+                    'launch-effect': {
+                        '0%': { opacity: 0, transform: 'scale(0) rotate(45deg)' },
+                        '100%': { opacity: 1, transform: 'scale(0.6) rotate(45deg)' },
+                    },
+                    'pulse-orbit': {
+                        '0%, 100%': { 'stroke-opacity': 0.1 },
+                        '50%': { 'stroke-opacity': 0.4 },
+                    },
+                    'scanline': {
+                        '0%': { backgroundPosition: '0 0' },
+                        '100%': { backgroundPosition: '0 100px' },
+                    }
                 }
             },
         },
@@ -75,8 +97,48 @@
       }
     }
     </script>
+    <style>
+      .scanline-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background-image: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.03), rgba(0,0,255,0.03));
+        background-size: 100% 4px, 6px 100%;
+        z-index: 9999;
+        animation: scanline 10s linear infinite;
+      }
+      .pixelated-button {
+          background-color: #4A5568;
+          border: 2px solid #E2E8F0;
+          color: white;
+          padding: 8px 16px;
+          text-transform: uppercase;
+          box-shadow: inset -2px -2px 0 0 #2D3748, inset 2px 2px 0 0 #A0AEC0;
+      }
+      .pixelated-button:hover {
+          background-color: #718096;
+      }
+      .pixelated-button:active {
+          box-shadow: inset 2px 2px 0 0 #2D3748, inset -2px -2px 0 0 #A0AEC0;
+      }
+      .pixelated-button-primary {
+          background-color: #EC4899;
+          border-color: #FBCFE8;
+          box-shadow: inset -2px -2px 0 0 #9D2667, inset 2px 2px 0 0 #F9A8D4;
+      }
+       .pixelated-button-primary:hover {
+          background-color: #F472B6;
+      }
+       .pixelated-button-primary:active {
+          box-shadow: inset 2px 2px 0 0 #9D2667, inset -2px -2px 0 0 #F9A8D4;
+      }
+    </style>
 </head>
 <body class="bg-background-dark">
+    <div class="scanline-overlay"></div>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>

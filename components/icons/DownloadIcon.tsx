@@ -1,7 +1,7 @@
-
 import React from 'react';
-export const BookOpenIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+
+export const DownloadIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props} shapeRendering="crispEdges">
-    <path d="M4 4h7v2H6v12h5v2H4V4zm9 0h7v16h-7v-2h5V6h-5V4z" />
+    <path d="M5 20h14v-2H5v2zm7-18L5.33 9h4.34v6h4.66V9h4.34L12 2z" />
   </svg>
 );

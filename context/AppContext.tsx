@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
 import i18nData from '../i18n';
 
@@ -10,7 +9,7 @@ interface AppContextType {
   setLanguage: (lang: Language) => void;
   theme: Theme;
   toggleTheme: () => void;
-  t: (key: string) => string;
+  t: (key: string, options?: { [key: string]: string | number }) => string;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -39,8 +38,15 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
     setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
-  const t = useCallback((key: string): string => {
-    return i18nData[language][key] || key;
+  const t = useCallback((key: string, options?: { [key: string]: string | number }): string => {
+    let translation = i18nData[language][key] || key;
+    if (options) {
+      Object.keys(options).forEach(optionKey => {
+        const regex = new RegExp(`{{${optionKey}}}`, 'g');
+        translation = translation.replace(regex, String(options[optionKey]));
+      });
+    }
+    return translation;
   }, [language]);
 
   const value = { language, setLanguage, theme, toggleTheme, t };

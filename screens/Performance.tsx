@@ -1,9 +1,10 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { PerformanceData, Subject } from '../types';
 import { performanceHistory } from '../data/mockData';
 import { generatePerformanceSummary } from '../services/geminiService';
 import { useAppContext } from '../context/AppContext';
-import GalacticLayout from '../components/GalacticLayout';
 import { SparklesIcon } from '../components/icons/SparklesIcon';
 
 // A simple chart component using divs for bars
@@ -29,8 +30,8 @@ const PerformanceChart: React.FC<{ data: PerformanceData[] }> = ({ data }) => {
     };
 
     return (
-        <div className="bg-surface-dark/50 border border-primary/30 rounded-lg p-6">
-            <h2 className="text-xl font-bold text-primary-light mb-6">{t('scoreOverTime')}</h2>
+        <div className="bg-black/50 border-2 border-primary/50 p-6">
+            <h2 className="text-xl font-bold text-primary-light mb-6 uppercase tracking-widest">{t('scoreOverTime')}</h2>
             <div className="flex justify-between gap-4" style={{ height: '200px' }}>
                 {dates.map(date => (
                     <div key={date} className="flex-1 flex flex-col items-center justify-end gap-2">
@@ -38,7 +39,7 @@ const PerformanceChart: React.FC<{ data: PerformanceData[] }> = ({ data }) => {
                             {subjects.map(subject => (
                                 <div
                                     key={subject}
-                                    className={`w-1/3 rounded-t-sm transition-all duration-500 ease-out ${subjectColors[subject]}`}
+                                    className={`w-1/3 transition-all duration-500 ease-out ${subjectColors[subject]}`}
                                     style={{ height: `${groupedData[date][subject] || 0}%` }}
                                     title={`${t(subject.toLowerCase())}: ${groupedData[date][subject] || 0}%`}
                                 />
@@ -51,8 +52,8 @@ const PerformanceChart: React.FC<{ data: PerformanceData[] }> = ({ data }) => {
              <div className="flex justify-center gap-6 mt-6 pt-4 border-t border-primary/20">
                 {subjects.map(subject => (
                     <div key={subject} className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-sm ${subjectColors[subject]}`}></div>
-                        <span className="text-sm text-text-dark">{t(subject.toLowerCase())}</span>
+                        <div className={`w-3 h-3 ${subjectColors[subject]}`}></div>
+                        <span className="text-sm text-text-dark uppercase">{t(subject.toLowerCase())}</span>
                     </div>
                 ))}
             </div>
@@ -77,40 +78,37 @@ const Performance: React.FC = () => {
                     const generatedSummary = await generatePerformanceSummary(performanceHistory, language);
                     setSummary(generatedSummary);
                 } else {
-                    setSummary("No performance data yet. Complete some practice sessions to see your progress!");
+                    setSummary(t('performanceNoData'));
                 }
             } catch (err) {
                 console.error(err);
-                setError('Failed to load AI summary. Please try again later.');
+                setError(t('performanceError'));
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchSummary();
-    }, [language]);
+    }, [language, t]);
     
     return (
-        <GalacticLayout>
-            <h1 className="text-4xl font-bold mb-8 text-primary-light text-center">{t('performanceTitle')}</h1>
-            <div className="max-w-4xl mx-auto space-y-8">
-                <div className="bg-surface-dark/50 border border-primary/30 rounded-lg p-6 min-h-[120px]">
-                     <h2 className="flex items-center gap-2 text-xl font-bold text-primary-light mb-4">
-                        <SparklesIcon className="w-6 h-6" />
-                        {t('aiSummaryTitle')}
-                    </h2>
-                    {isLoading && (
-                        <div className="flex items-center gap-2 text-muted-dark">
-                            <div className="w-5 h-5 border-2 border-primary-light border-t-transparent rounded-full animate-spin"></div>
-                            <span>Generating your performance analysis...</span>
-                        </div>
-                    )}
-                    {error && <p className="text-red-400">{error}</p>}
-                    {!isLoading && !error && <p className="text-text-dark leading-relaxed">{summary}</p>}
-                </div>
-                {performanceHistory.length > 0 && <PerformanceChart data={performanceHistory} />}
+        <div className="max-w-4xl mx-auto space-y-8">
+            <div className="bg-black/50 border-2 border-primary/50 p-6 min-h-[120px]">
+                 <h2 className="flex items-center gap-2 text-xl font-bold text-primary-light mb-4 uppercase tracking-widest">
+                    <SparklesIcon className="w-6 h-6" />
+                    {t('aiSummaryTitle')}
+                </h2>
+                {isLoading && (
+                    <div className="flex items-center gap-2 text-muted-dark">
+                        <div className="w-5 h-5 border-2 border-primary-light border-t-transparent rounded-full animate-spin"></div>
+                        <span>{t('performanceGenerating')}</span>
+                    </div>
+                )}
+                {error && <p className="text-red-400">{error}</p>}
+                {!isLoading && !error && <p className="text-text-dark leading-relaxed text-sm">{summary}</p>}
             </div>
-        </GalacticLayout>
+            {performanceHistory.length > 0 && <PerformanceChart data={performanceHistory} />}
+        </div>
     );
 };
 

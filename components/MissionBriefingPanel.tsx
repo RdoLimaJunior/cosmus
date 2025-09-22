@@ -1,68 +1,61 @@
 import React from 'react';
-import { StudyModule } from '../types';
+import { CelestialBody } from '../types';
 import { useAppContext } from '../context/AppContext';
-import { RocketLaunchIcon } from './icons/RocketLaunchIcon';
 import { XIcon } from './icons/XIcon';
-import { CheckCircleIcon } from './icons/CheckCircleIcon';
+import { RocketLaunchIcon } from './icons/RocketLaunchIcon';
 
 interface MissionBriefingPanelProps {
-    module: StudyModule;
+    body: CelestialBody;
     onLaunch: () => void;
     onClose: () => void;
 }
 
-const MissionBriefingPanel: React.FC<MissionBriefingPanelProps> = ({ module, onLaunch, onClose }) => {
+const MissionBriefingPanel: React.FC<MissionBriefingPanelProps> = ({ body, onLaunch, onClose }) => {
     const { t } = useAppContext();
 
-    return (
-        <div className="fixed bottom-4 left-4 md:bottom-8 md:left-8 w-[calc(100%-2rem)] max-w-sm z-20">
-            <div className="bg-surface-dark/80 backdrop-blur-md border border-primary/50 rounded-xl shadow-2xl shadow-primary/20 text-text-dark animate-fade-in-up">
-                <header className="flex items-center justify-between p-4 border-b border-primary/30">
-                    <h2 className="text-lg font-bold text-primary-light uppercase tracking-widest">{t('missionBriefing')}</h2>
-                    <button onClick={onClose} className="p-1 text-muted-dark hover:text-primary-light transition-colors">
-                        <XIcon className="w-5 h-5" />
-                    </button>
-                </header>
-                <div className="p-6">
-                    <h3 className="text-2xl font-bold mb-2">{module.title}</h3>
-                    <div className="flex items-center gap-2 mb-4">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${module.subject === 'Biology' ? 'bg-green-500/20 text-green-300' : module.subject === 'Chemistry' ? 'bg-blue-500/20 text-blue-300' : 'bg-red-500/20 text-red-300'}`}>
-                            {t(module.subject.toLowerCase())}
-                        </span>
-                        {module.isCompleted && (
-                            <span className="flex items-center gap-1 text-xs text-secondary-light">
-                                <CheckCircleIcon className="w-4 h-4" />
-                                COMPLETED
-                            </span>
-                        )}
-                    </div>
+    const subjectColors: Record<string, string> = {
+        Biology: 'border-green-500/80',
+        Chemistry: 'border-blue-500/80',
+        Physics: 'border-red-500/80',
+    };
 
-                    <p className="text-sm text-muted-dark mb-6 leading-relaxed">{module.summary}</p>
-                    
-                    <button 
-                        onClick={onLaunch}
-                        className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-secondary hover:bg-secondary-dark text-white font-bold rounded-lg shadow-lg shadow-secondary/30 transform hover:scale-105 transition-all duration-300"
-                    >
-                        <RocketLaunchIcon className="w-6 h-6" />
-                        <span>{t('launchSequence')}</span>
+    const subjectTextColors: Record<string, string> = {
+        Biology: 'text-green-400',
+        Chemistry: 'text-blue-400',
+        Physics: 'text-red-400',
+    };
+    
+    return (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center animate-fade-in p-4">
+            <aside className={`relative w-full max-w-lg bg-black/90 border-2 ${subjectColors[body.subject]} flex flex-col p-6`}>
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl text-white uppercase tracking-widest">{t('missionDetails')}</h2>
+                    <button onClick={onClose} className="p-2 hover:bg-white/10 text-muted-dark transition-colors">
+                        <XIcon className="w-6 h-6" />
                     </button>
                 </div>
-            </div>
-            <style>{`
-                @keyframes fade-in-up {
-                    0% {
-                        opacity: 0;
-                        transform: translateY(20px);
-                    }
-                    100% {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                .animate-fade-in-up {
-                    animation: fade-in-up 0.5s ease-out forwards;
-                }
-            `}</style>
+                
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                    <span className={`text-sm font-semibold uppercase ${subjectTextColors[body.subject]}`}>{t(body.subject.toLowerCase())}</span>
+                    <h3 className="text-xl text-primary-light mt-1 mb-3">{t(body.title)}</h3>
+                    <p className="text-text-dark leading-relaxed text-sm">{t(body.description)}</p>
+                    
+                    <div className="mt-6 p-4 bg-black/50 border border-gray-700">
+                        <h4 className="font-semibold text-white mb-2 uppercase text-sm">{t('missionSummary')}</h4>
+                        <p className="text-xs text-muted-dark leading-normal">{t(body.summary)}</p>
+                    </div>
+                </div>
+
+                <div className="mt-6">
+                     <button 
+                        onClick={onLaunch}
+                        className="w-full flex items-center justify-center gap-2 pixelated-button pixelated-button-primary text-lg"
+                     >
+                        <RocketLaunchIcon className="w-6 h-6" />
+                        {t('startMission')}
+                    </button>
+                </div>
+            </aside>
         </div>
     );
 };

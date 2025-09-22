@@ -1,141 +1,251 @@
-import { PracticeQuestion, Subject, Badge, PerformanceData, StudyModule } from '../types';
+import { CelestialBody, PracticeQuestion, Badge, PerformanceData, Subject, Quiz } from '../types';
+
+export const celestialBodies: CelestialBody[] = [
+  // The Sun - Our star, a visual center but not a mission target
+  {
+    id: 'sol',
+    title: 'body.sol.title',
+    subject: Subject.Physics,
+    description: 'body.sol.description',
+    content: 'body.sol.content',
+    summary: 'body.sol.summary',
+    bodyType: 'Star',
+    isCompleted: false, // Not a completable mission
+    x: 50,
+    y: 50,
+  },
+  // Inner Planets
+  {
+    id: 'mercury',
+    title: 'body.mercury.title',
+    subject: Subject.Physics,
+    description: 'body.mercury.description',
+    content: 'body.mercury.content',
+    summary: 'body.mercury.summary',
+    bodyType: 'Terrestrial',
+    isCompleted: false,
+    x: 42,
+    y: 52,
+    color: '#A0AEC0', // gray-500
+  },
+  {
+    id: 'venus',
+    title: 'body.venus.title',
+    subject: Subject.Chemistry,
+    description: 'body.venus.description',
+    content: 'body.venus.content',
+    summary: 'body.venus.summary',
+    bodyType: 'Terrestrial',
+    isCompleted: false,
+    x: 35,
+    y: 47,
+    color: '#F6E05E', // yellow-400
+  },
+  {
+    id: 'earth',
+    title: 'body.earth.title',
+    subject: Subject.Biology,
+    description: 'body.earth.description',
+    content: 'body.earth.content',
+    summary: 'body.earth.summary',
+    bodyType: 'Terrestrial',
+    isCompleted: true, // This is where the journey begins
+    x: 27,
+    y: 53,
+    unlocks: 'moon',
+    color: '#4299E1', // blue-400
+  },
+  {
+    id: 'moon',
+    title: 'body.moon.title',
+    subject: Subject.Physics,
+    description: 'body.moon.description',
+    content: 'body.moon.content',
+    summary: 'body.moon.summary',
+    bodyType: 'Moon',
+    isCompleted: false,
+    x: 24,
+    y: 49,
+    unlocks: 'mars',
+    color: '#A0AEC0', // gray-400
+  },
+  {
+    id: 'mars',
+    title: 'body.mars.title',
+    subject: Subject.Chemistry,
+    description: 'body.mars.description',
+    content: 'body.mars.content',
+    summary: 'body.mars.summary',
+    bodyType: 'Terrestrial',
+    isCompleted: false,
+    x: 19,
+    y: 46,
+    unlocks: 'jupiter',
+    color: '#E53E3E', // red-600
+  },
+  // Outer Planets
+  {
+    id: 'jupiter',
+    title: 'body.jupiter.title',
+    subject: Subject.Physics,
+    description: 'body.jupiter.description',
+    content: 'body.jupiter.content',
+    summary: 'body.jupiter.summary',
+    bodyType: 'GasGiant',
+    isCompleted: false,
+    x: 10,
+    y: 55,
+    color: '#D69E2E', // yellow-600
+  },
+  {
+    id: 'saturn',
+    title: 'body.saturn.title',
+    subject: Subject.Physics,
+    description: 'body.saturn.description',
+    content: 'body.saturn.content',
+    summary: 'body.saturn.summary',
+    bodyType: 'GasGiant',
+    isCompleted: false,
+    x: 70,
+    y: 40,
+    color: '#F6E05E', // yellow-400
+  },
+  {
+    id: 'uranus',
+    title: 'body.uranus.title',
+    subject: Subject.Physics,
+    description: 'body.uranus.description',
+    content: 'body.uranus.content',
+    summary: 'body.uranus.summary',
+    bodyType: 'IceGiant',
+    isCompleted: false,
+    x: 80,
+    y: 55,
+    color: '#63B3ED', // blue-300
+  },
+  {
+    id: 'neptune',
+    title: 'body.neptune.title',
+    subject: Subject.Physics,
+    description: 'body.neptune.description',
+    content: 'body.neptune.content',
+    summary: 'body.neptune.summary',
+    bodyType: 'IceGiant',
+    isCompleted: false,
+    x: 90,
+    y: 45,
+    color: '#4299E1', // blue-500
+  },
+];
+
 
 export const practiceQuestions: PracticeQuestion[] = [
+  // Biology
   {
-    id: 'bio1',
+    id: 'q-bio-1',
     subject: Subject.Biology,
-    question: 'What is the powerhouse of the cell?',
-    options: ['Nucleus', 'Ribosome', 'Mitochondrion', 'Cell Wall'],
-    correctAnswer: 'Mitochondrion',
-    explanation: "The mitochondrion is responsible for generating most of the cell's supply of adenosine triphosphate (ATP), used as a source of chemical energy."
+    question: 'question.bio1.q',
+    options: ['option.bio1.a', 'option.bio1.b', 'option.bio1.c', 'option.bio1.d'],
+    correctAnswer: 'option.bio1.c',
+    explanation: 'explanation.bio1'
   },
   {
-    id: 'bio2',
+    id: 'q-bio-2',
     subject: Subject.Biology,
-    question: 'Which of these is not part of the respiratory system?',
-    options: ['Lungs', 'Diaphragm', 'Trachea', 'Esophagus'],
-    correctAnswer: 'Esophagus',
-    explanation: 'The esophagus is part of the digestive system. The lungs, diaphragm, and trachea are all key components of the respiratory system.'
+    question: 'question.bio2.q',
+    options: ['option.bio2.a', 'option.bio2.b', 'option.bio2.c', 'option.bio2.d'],
+    correctAnswer: 'option.bio2.a',
+    explanation: 'explanation.bio2'
   },
+  // Chemistry
   {
-    id: 'chem1',
+    id: 'q-chem-1',
     subject: Subject.Chemistry,
-    question: 'What is the chemical symbol for Gold?',
-    options: ['Ag', 'Au', 'G', 'Go'],
-    correctAnswer: 'Au',
-    explanation: 'The symbol Au for gold comes from its Latin name, "aurum".'
-  },
-  {
-    id: 'chem2',
-    subject: Subject.Chemistry,
-    question: 'What is the pH of a neutral substance?',
-    options: ['0', '7', '14', '1'],
-    correctAnswer: '7',
-    explanation: 'A pH of 7 is neutral. A pH less than 7 is acidic, and a pH greater than 7 is basic.'
-  },
-  {
-    id: 'phys1',
-    subject: Subject.Physics,
-    question: 'What is the unit of electrical resistance?',
-    options: ['Volt', 'Ampere', 'Ohm', 'Watt'],
-    correctAnswer: 'Ohm',
-    explanation: 'The Ohm (Ω) is the SI unit of electrical resistance, named after German physicist Georg Ohm.'
+    question: 'question.chem1.q',
+    options: ['option.chem1.a', 'option.chem1.b', 'option.chem1.c', 'option.chem1.d'],
+    correctAnswer: 'option.chem1.a',
+    explanation: 'explanation.chem1'
   },
    {
-    id: 'phys2',
+    id: 'q-chem-2',
+    subject: Subject.Chemistry,
+    question: 'question.chem2.q',
+    options: ['option.chem2.a', 'option.chem2.b', 'option.chem2.c', 'option.chem2.d'],
+    correctAnswer: 'option.chem2.d',
+    explanation: 'explanation.chem2'
+  },
+  // Physics
+  {
+    id: 'q-phy-1',
     subject: Subject.Physics,
-    question: "What does Newton's first law of motion state?",
-    options: ['F=ma', 'For every action, there is an equal and opposite reaction', 'An object at rest stays at rest', 'Energy cannot be created or destroyed'],
-    correctAnswer: 'An object at rest stays at rest',
-    explanation: "Newton's first law, also known as the law of inertia, states that an object at rest will stay at rest and an object in motion will stay in motion with the same speed and in the same direction unless acted upon by an unbalanced force."
+    question: 'question.phy1.q',
+    options: ['option.phy1.a', 'option.phy1.b', 'option.phy1.c', 'option.phy1.d'],
+    correctAnswer: 'option.phy1.b',
+    explanation: 'explanation.phy1'
+  },
+  {
+    id: 'q-phy-2',
+    subject: Subject.Physics,
+    question: 'question.phy2.q',
+    options: ['option.phy2.a', 'option.phy2.b', 'option.phy2.c', 'option.phy2.d'],
+    correctAnswer: 'option.phy2.c',
+    explanation: 'explanation.phy2'
   }
 ];
 
 export const badges: Badge[] = [
   {
-    id: 'practice_streak_3',
-    title: 'Getting Started',
-    description: 'Achieve a 3-question correct streak.',
+    id: 'streak-3',
+    title: 'badge.streak-3.title',
+    description: 'badge.streak-3.description',
     type: 'practice',
     criteria: { streak: 3 }
   },
   {
-    id: 'practice_streak_5',
-    title: 'On Fire!',
-    description: 'Achieve a 5-question correct streak in a single practice session.',
+    id: 'correct-5',
+    title: 'badge.correct-5.title',
+    description: 'badge.correct-5.description',
     type: 'practice',
-    criteria: { streak: 5 }
+    criteria: { correctAnswers: 5 }
   },
   {
-    id: 'practice_perfect_score',
-    title: 'Perfectionist',
-    description: 'Get a perfect score (100%) in a practice session with at least 5 questions.',
+    id: 'score-100',
+    title: 'badge.score-100.title',
+    description: 'badge.score-100.description',
     type: 'practice',
     criteria: { scorePercentage: 100, minQuestions: 5 }
-  },
-   {
-    id: 'practice_10_correct',
-    title: 'Knowledge Builder',
-    description: 'Answer 10 questions correctly in a single session.',
-    type: 'practice',
-    criteria: { correctAnswers: 10 }
   }
 ];
 
 export const performanceHistory: PerformanceData[] = [
-  { date: '2024-06-01', subject: Subject.Biology, score: 75 },
-  { date: '2024-06-01', subject: Subject.Chemistry, score: 60 },
-  { date: '2024-06-01', subject: Subject.Physics, score: 68 },
-  { date: '2024-06-08', subject: Subject.Biology, score: 80 },
-  { date: '2024-06-08', subject: Subject.Chemistry, score: 62 },
-  { date: '2024-06-08', subject: Subject.Physics, score: 75 },
-  { date: '2024-06-15', subject: Subject.Biology, score: 82 },
-  { date: '2024-06-15', subject: Subject.Chemistry, score: 70 },
-  { date: '2024-06-15', subject: Subject.Physics, score: 73 },
-   { date: '2024-06-22', subject: Subject.Biology, score: 88 },
-  { date: '2024-06-22', subject: Subject.Chemistry, score: 71 },
+  { date: "2023-10-01", subject: Subject.Biology, score: 60 },
+  { date: "2023-10-01", subject: Subject.Chemistry, score: 75 },
+  { date: "2023-10-01", subject: Subject.Physics, score: 50 },
+  { date: "2023-10-08", subject: Subject.Biology, score: 70 },
+  { date: "2023-10-08", subject: Subject.Chemistry, score: 70 },
+  { date: "2023-10-08", subject: Subject.Physics, score: 65 },
+  { date: "2023-10-15", subject: Subject.Biology, score: 85 },
+  { date: "2023-10-15", subject: Subject.Chemistry, score: 65 },
+  { date: "2023-10-15", subject: Subject.Physics, score: 75 },
 ];
 
-export const studyModules: StudyModule[] = [
-    {
-        id: 'bio-01',
-        subject: Subject.Biology,
-        title: 'Cellular Biology',
-        summary: 'Explore the fundamental unit of life, the cell. Learn about its structure, organelles, and basic functions.',
-        content: 'The cell is the basic structural, functional, and biological unit of all known organisms. A cell is the smallest unit of life. Cells are often called the "building blocks of life". The study of cells is called cell biology, cellular biology, or cytology.',
-        isCompleted: true,
-        x: 150,
-        y: 200,
-        unlocks: 'bio-02',
-    },
-    {
-        id: 'bio-02',
-        subject: Subject.Biology,
-        title: 'Genetics and DNA',
-        summary: 'Dive into the world of heredity, genes, and the molecule that carries the instructions for life.',
-        content: 'Genetics is the study of genes, genetic variation, and heredity in living organisms. It is a branch of biology. Gregor Mendel, an Augustinian friar and scientist, is known as the "father of modern genetics" for his work on pea plants.',
-        isCompleted: false,
-        x: 350,
-        y: 150,
-    },
-    {
-        id: 'chem-01',
-        subject: Subject.Chemistry,
-        title: 'The Periodic Table',
-        summary: 'Understand the organization of elements and the periodic trends that govern their properties.',
-        content: 'The periodic table is a tabular arrangement of the chemical elements, ordered by their atomic number, electron configurations, and recurring chemical properties. Elements are presented in order of increasing atomic number.',
-        isCompleted: true,
-        x: 250,
-        y: 400,
-    },
-    {
-        id: 'phys-01',
-        subject: Subject.Physics,
-        title: "Newton's Laws of Motion",
-        summary: 'Learn the three fundamental laws that describe the relationship between an object and the forces acting upon it.',
-        content: "Newton's laws of motion are three physical laws that, together, laid the foundation for classical mechanics. They describe the relationship between a body and the forces acting upon it, and its motion in response to those forces.",
-        isCompleted: false,
-        x: 500,
-        y: 350,
-    }
+export const quizzes: Quiz[] = [
+  {
+    id: 'cell_theory_q1',
+    question: 'quiz.cell_theory_q1.q',
+    options: ['quiz.cell_theory_q1.opt1', 'quiz.cell_theory_q1.opt2', 'quiz.cell_theory_q1.opt3', 'quiz.cell_theory_q1.opt4'],
+    correctAnswer: 'quiz.cell_theory_q1.opt2'
+  },
+  {
+    id: 'newton_law_q1',
+    question: 'quiz.newton_law_q1.q',
+    options: ['quiz.newton_law_q1.opt1', 'quiz.newton_law_q1.opt2', 'quiz.newton_law_q1.opt3', 'quiz.newton_law_q1.opt4'],
+    correctAnswer: 'quiz.newton_law_q1.opt1'
+  },
+  {
+    id: 'atom_particle_q1',
+    question: 'quiz.atom_particle_q1.q',
+    options: ['quiz.atom_particle_q1.opt1', 'quiz.atom_particle_q1.opt2', 'quiz.atom_particle_q1.opt3', 'quiz.atom_particle_q1.opt4'],
+    correctAnswer: 'quiz.atom_particle_q1.opt3'
+  },
 ];

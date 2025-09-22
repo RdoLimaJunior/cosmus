@@ -1,199 +1,250 @@
-import React, { useState, useEffect } from 'react';
-import { Subject, PracticeQuestion, Badge } from '../types';
+
+
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { PracticeQuestion, Subject, Badge } from '../types';
 import { practiceQuestions, badges } from '../data/mockData';
 import { useAppContext } from '../context/AppContext';
-import GalacticLayout from '../components/GalacticLayout';
+import { useUserProgress } from '../context/UserProgressContext';
+import { AtomIcon } from '../components/icons/AtomIcon';
+import { FlaskIcon } from '../components/icons/FlaskIcon';
+import { BookOpenIcon } from '../components/icons/BookOpenIcon';
 import { CheckCircleIcon } from '../components/icons/CheckCircleIcon';
 import { XCircleIcon } from '../components/icons/XCircleIcon';
 import BadgeNotification from '../components/BadgeNotification';
 
-// A simple shuffle function
-const shuffleArray = <T,>(array: T[]): T[] => {
-    return [...array].sort(() => Math.random() - 0.5);
-};
-
 const Practice: React.FC = () => {
     const { t } = useAppContext();
+    const { addXp } = useUserProgress();
+
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
-    const [questions, setQuestions] = useState<PracticeQuestion[]>([]);
+    const [currentQuestions, setCurrentQuestions] = useState<PracticeQuestion[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
-    const [isAnswered, setIsAnswered] = useState(false);
+    const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+    const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const [score, setScore] = useState(0);
-    const [isFinished, setIsFinished] = useState(false);
-    
     const [streak, setStreak] = useState(0);
+    const [correctCount, setCorrectCount] = useState(0);
+    const [isFinished, setIsFinished] = useState(false);
     const [unlockedBadge, setUnlockedBadge] = useState<Badge | null>(null);
-    const [awardedBadges, setAwardedBadges] = useState<string[]>([]);
+    const [earnedBadges, setEarnedBadges] = useState<string[]>([]);
 
-    const subjects = Object.values(Subject);
-    const currentQuestion = questions[currentQuestionIndex];
+    const shuffleArray = (array: any[]) => {
+        // Simple shuffle
+        return [...array].sort(() => Math.random() - 0.5);
+    };
 
-    useEffect(() => {
-        if (selectedSubject) {
-            const subjectQuestions = shuffleArray(practiceQuestions.filter(q => q.subject === selectedSubject)).slice(0, 5); // Take 5 random questions
-            setQuestions(subjectQuestions);
-            setCurrentQuestionIndex(0);
-            setSelectedOption(null);
-            setIsAnswered(false);
-            setScore(0);
-            setIsFinished(false);
-            setStreak(0);
-            setAwardedBadges([]);
-        }
-    }, [selectedSubject]);
-
-    const checkBadges = (currentScore: number, currentStreak: number, isDone: boolean) => {
-        const correctAnswers = currentScore;
-        const totalQuestions = questions.length;
+    const startPractice = (subject: Subject) => {
+        const questionsForSubject = practiceQuestions.filter(q => q.subject === subject);
+        setCurrentQuestions(shuffleArray(questionsForSubject));
+        setSelectedSubject(subject);
+        setCurrentQuestionIndex(0);
+        setSelectedAnswer(null);
+        setIsCorrect(null);
+        setScore(0);
+        setStreak(0);
+        setCorrectCount(0);
+        setIsFinished(false);
+        setUnlockedBadge(null);
+        // Not resetting earnedBadges to track across sessions
+    };
+    
+    const checkBadges = useCallback((currentStreak: number, currentCorrectCount: number, currentScore: number, totalQuestions: number, sessionFinished: boolean) => {
         const scorePercentage = totalQuestions > 0 ? (currentScore / totalQuestions) * 100 : 0;
 
-        const badgeToUnlock = badges.find(badge => {
-            if (awardedBadges.includes(badge.id) || badge.type !== 'practice') return false;
+        for (const badge of badges) {
+            if (earnedBadges.includes(badge.id)) continue;
 
-            const { criteria } = badge;
-            if (criteria.streak && currentStreak >= criteria.streak) return true;
-            if (criteria.correctAnswers && correctAnswers >= criteria.correctAnswers) return true;
-            if (isDone && criteria.scorePercentage && scorePercentage >= criteria.scorePercentage && totalQuestions >= (criteria.minQuestions || 0)) return true;
+            let criteriaMet = false;
+            // Check for streak or correct answer count badges during the session
+            if (!sessionFinished) {
+                if (badge.criteria.streak && currentStreak >= badge.criteria.streak) {
+                    criteriaMet = true;
+                }
+                if (badge.criteria.correctAnswers && currentCorrectCount >= badge.criteria.correctAnswers) {
+                    criteriaMet = true;
+                }
+            }
+            // Check for score percentage badges at the end of the session
+            else if (sessionFinished && badge.criteria.scorePercentage && badge.criteria.minQuestions) {
+                if (totalQuestions >= badge.criteria.minQuestions && scorePercentage >= badge.criteria.minQuestions) {
+                    criteriaMet = true;
+                }
+            }
             
-            return false;
-        });
-
-        if (badgeToUnlock) {
-            setUnlockedBadge(badgeToUnlock);
-            setAwardedBadges(prev => [...prev, badgeToUnlock.id]);
+            if (criteriaMet) {
+                setUnlockedBadge(badge);
+                setEarnedBadges(prev => [...prev, badge.id]);
+                break; // Show one badge at a time
+            }
         }
-    };
+    }, [earnedBadges]);
     
-    const handleOptionSelect = (option: string) => {
-        if (isAnswered) return;
-        
-        setSelectedOption(option);
-        setIsAnswered(true);
+    useEffect(() => {
+        if (isFinished) {
+             checkBadges(streak, correctCount, score, currentQuestions.length, true);
+             // Award XP bonus for finishing
+             const bonusXp = score * 5;
+             addXp(bonusXp);
+        }
+    }, [isFinished, streak, correctCount, score, currentQuestions.length, checkBadges, addXp]);
 
-        if (option === currentQuestion.correctAnswer) {
+
+    const handleAnswerSelect = (answer: string) => {
+        if (selectedAnswer !== null) return; // Prevent changing answer
+
+        setSelectedAnswer(answer);
+        const correct = answer === t(currentQuestions[currentQuestionIndex].correctAnswer);
+        setIsCorrect(correct);
+
+        if (correct) {
             const newScore = score + 1;
-            setScore(newScore);
             const newStreak = streak + 1;
+            const newCorrectCount = correctCount + 1;
+            setScore(newScore);
             setStreak(newStreak);
-            checkBadges(newScore, newStreak, false);
+            setCorrectCount(newCorrectCount);
+            checkBadges(newStreak, newCorrectCount, newScore, currentQuestions.length, false);
+            addXp(10); // Award XP for correct answer
         } else {
             setStreak(0);
         }
     };
 
-    const handleNext = () => {
-        if (currentQuestionIndex < questions.length - 1) {
+    const handleNextQuestion = () => {
+        if (currentQuestionIndex < currentQuestions.length - 1) {
             setCurrentQuestionIndex(prev => prev + 1);
-            setSelectedOption(null);
-            setIsAnswered(false);
+            setSelectedAnswer(null);
+            setIsCorrect(null);
         } else {
             setIsFinished(true);
-            checkBadges(score, streak, true); // Check for end-of-session badges
         }
     };
-
-    const handleTryAgain = () => {
+    
+    const handleRestart = () => {
         setSelectedSubject(null);
         setIsFinished(false);
     };
 
-    const renderSubjectSelection = () => (
-        <div className="text-center">
-            <h1 className="text-4xl font-bold mb-8 text-primary-light">{t('practiceTitle')}</h1>
-            <p className="text-lg mb-8 text-muted-dark">{t('chooseSubjectToPractice')}</p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                {subjects.map(subject => (
-                    <button
-                        key={subject}
-                        onClick={() => setSelectedSubject(subject)}
-                        className="p-8 bg-surface-dark/50 border border-primary/30 rounded-lg hover:bg-primary/30 hover:border-primary-light transition-all duration-300 transform hover:scale-105"
-                    >
-                        <h2 className="text-2xl font-semibold text-white">{t(subject.toLowerCase())}</h2>
-                    </button>
-                ))}
-            </div>
-        </div>
-    );
+    const handleDismissBadge = () => {
+        setUnlockedBadge(null);
+    };
 
-    const renderQuiz = () => (
-        <div className="max-w-3xl mx-auto">
-            <h1 className="text-2xl font-bold mb-2 text-primary-light">{t('practiceTitle')}: {t(selectedSubject!.toLowerCase())}</h1>
-            <p className="mb-4 text-muted-dark">Question {currentQuestionIndex + 1} of {questions.length}</p>
-            <div className="bg-surface-dark/50 border border-primary/30 rounded-lg p-6 shadow-lg">
-                <p className="text-xl mb-6 font-semibold">{currentQuestion.question}</p>
-                <div className="space-y-4">
-                    {currentQuestion.options.map(option => {
-                        const isCorrect = option === currentQuestion.correctAnswer;
-                        const isSelected = option === selectedOption;
-                        let buttonClass = 'w-full text-left p-4 rounded-lg border-2 transition-colors duration-200 ';
-                        if (isAnswered) {
-                            if (isCorrect) {
-                                buttonClass += 'bg-green-500/20 border-green-400 text-white';
-                            } else if (isSelected) {
-                                buttonClass += 'bg-red-500/20 border-red-400 text-white';
-                            } else {
-                                buttonClass += 'bg-surface-dark border-gray-600 text-muted-dark';
-                            }
-                        } else {
-                            buttonClass += 'bg-surface-dark border-gray-600 hover:bg-primary/20 hover:border-primary-light';
-                        }
-                        return (
-                            <button
-                                key={option}
-                                onClick={() => handleOptionSelect(option)}
-                                disabled={isAnswered}
-                                className={buttonClass}
-                            >
-                                {option}
-                            </button>
-                        );
-                    })}
-                </div>
-                {isAnswered && (
-                    <div className="mt-6 p-4 rounded-lg bg-black/30">
-                        {selectedOption === currentQuestion.correctAnswer ? (
-                            <p className="flex items-center gap-2 text-green-400 font-bold"><CheckCircleIcon className="w-5 h-5" /> {t('correct')}</p>
-                        ) : (
-                            <p className="flex items-center gap-2 text-red-400 font-bold"><XCircleIcon className="w-5 h-5" /> {t('incorrect')} "{currentQuestion.correctAnswer}"</p>
-                        )}
-                        <p className="mt-2 text-sm text-muted-dark">{currentQuestion.explanation}</p>
-                    </div>
-                )}
-                <div className="mt-6 text-right">
-                    <button 
-                        onClick={handleNext} 
-                        disabled={!isAnswered}
-                        className="px-6 py-2 bg-secondary text-white font-bold rounded-lg hover:bg-secondary-dark disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
-                    >
-                        {currentQuestionIndex < questions.length - 1 ? t('nextQuestion') : t('finishAttempt')}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
+    const subjectChoices = [
+        { subject: Subject.Biology, icon: <BookOpenIcon className="w-12 h-12" /> },
+        { subject: Subject.Chemistry, icon: <FlaskIcon className="w-12 h-12" /> },
+        { subject: Subject.Physics, icon: <AtomIcon className="w-12 h-12" /> },
+    ];
     
-    const renderResults = () => (
-        <div className="text-center max-w-lg mx-auto bg-surface-dark/50 border border-primary/30 rounded-lg p-8 shadow-lg">
-            <h1 className="text-4xl font-bold text-primary-light mb-4">{t('yourScore')}</h1>
-            <p className="text-6xl font-bold mb-6">{questions.length > 0 ? Math.round((score / questions.length) * 100) : 0}%</p>
-            <p className="text-lg text-muted-dark mb-8">You answered {score} out of {questions.length} questions correctly.</p>
-            <button
-                onClick={handleTryAgain}
-                className="px-8 py-3 bg-secondary text-white font-bold rounded-lg hover:bg-secondary-dark transition-colors"
-            >
-                {t('tryAgain')}
-            </button>
-        </div>
-    );
+    const currentQuestion = currentQuestions[currentQuestionIndex];
 
     return (
-        <GalacticLayout>
-            {!selectedSubject ? renderSubjectSelection() : isFinished ? renderResults() : renderQuiz()}
-            {unlockedBadge && (
-                <BadgeNotification badge={unlockedBadge} onDismiss={() => setUnlockedBadge(null)} />
-            )}
-        </GalacticLayout>
+        <>
+            {unlockedBadge && <BadgeNotification badge={unlockedBadge} onDismiss={handleDismissBadge} />}
+            
+            <div className="max-w-3xl mx-auto bg-black/50 border-2 border-primary/50 p-6 sm:p-8 min-h-[500px]">
+                {!selectedSubject ? (
+                    <div>
+                        <h2 className="text-2xl text-white mb-6 text-center tracking-widest uppercase">{t('chooseSubjectToPractice')}</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {subjectChoices.map(({ subject, icon }) => (
+                                <button
+                                    key={subject}
+                                    onClick={() => startPractice(subject)}
+                                    className="group flex flex-col items-center justify-center p-6 bg-black/50 border-2 border-primary/40 hover:border-primary-light hover:bg-primary/20 transition-all duration-300"
+                                >
+                                    <div className="text-primary-light group-hover:text-white transition-colors duration-300 mb-4">{icon}</div>
+                                    <h3 className="text-lg text-white uppercase">{t(subject.toLowerCase())}</h3>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                ) : isFinished ? (
+                    <div className="text-center flex flex-col items-center justify-center h-full min-h-[400px]">
+                        <h2 className="text-3xl text-white mb-4 uppercase">{t('yourScore')}</h2>
+                        <p className="text-5xl text-primary-light mb-2">{Math.round((score / currentQuestions.length) * 100)}%</p>
+                        <p className="text-muted-dark mb-8">{t('correct').replace('!', '')}: {score} / {currentQuestions.length}</p>
+                        <button
+                            onClick={handleRestart}
+                            className="pixelated-button pixelated-button-primary"
+                        >
+                            {t('tryAgain')}
+                        </button>
+                    </div>
+                ) : currentQuestion ? (
+                    <div>
+                        <div className="flex justify-between items-baseline mb-4">
+                            <span className="text-sm text-primary-light uppercase">{t(selectedSubject.toLowerCase())}</span>
+                            <span className="text-sm text-muted-dark">{t('questionCount', { current: currentQuestionIndex + 1, total: currentQuestions.length })}</span>
+                        </div>
+                        <p className="text-lg text-white mb-6 min-h-[60px] leading-relaxed">{t(currentQuestion.question)}</p>
+                        
+                        <div className="space-y-4">
+                            {currentQuestion.options.map(optionKey => {
+                                const translatedOption = t(optionKey);
+                                const isSelected = selectedAnswer === translatedOption;
+                                let buttonClass = 'bg-surface-dark border-gray-600 hover:bg-primary/20 hover:border-primary-light text-text-dark';
+                                if (selectedAnswer) {
+                                    if (translatedOption === t(currentQuestion.correctAnswer)) {
+                                        buttonClass = 'bg-green-700/80 border-green-400 text-white';
+                                    } else if (isSelected) {
+                                        buttonClass = 'bg-red-700/80 border-red-400 text-white';
+                                    }
+                                }
+
+                                return (
+                                    <button
+                                        key={optionKey}
+                                        onClick={() => handleAnswerSelect(translatedOption)}
+                                        disabled={selectedAnswer !== null}
+                                        className={`w-full text-left p-4 border-2 transition-colors duration-200 text-sm ${buttonClass}`}
+                                    >
+                                        {translatedOption}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {selectedAnswer && (
+                            <div className="mt-6 p-4 bg-black/30 animate-fade-in">
+                                {isCorrect ? (
+                                    <div className="flex items-center gap-2 text-green-400">
+                                        <CheckCircleIcon className="w-6 h-6" />
+                                        <p className="font-bold uppercase">{t('correct')}</p>
+                                    </div>
+                                ) : (
+                                    <div className="text-red-400">
+                                        <div className="flex items-center gap-2 font-bold mb-2 uppercase">
+                                            <XCircleIcon className="w-6 h-6" />
+                                            <p>{t('incorrect')}</p>
+                                        </div>
+                                        <p className="text-sm">{t('incorrectAnswerWas', { answer: t(currentQuestion.correctAnswer) })}</p>
+                                    </div>
+                                )}
+                                <p className="mt-2 text-sm text-muted-dark">{t(currentQuestion.explanation)}</p>
+                                <button
+                                    onClick={handleNextQuestion}
+                                    className="w-full mt-4 pixelated-button pixelated-button-primary"
+                                >
+                                    {currentQuestionIndex < currentQuestions.length - 1 ? t('nextQuestion') : t('finishAttempt')}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="text-center text-muted-dark flex items-center justify-center h-full min-h-[400px]">{t('noQuestions')}</div>
+                )}
+            </div>
+             <style>{`
+                @keyframes fade-in {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fade-in {
+                    animation: fade-in 0.3s ease-out forwards;
+                }
+            `}</style>
+        </>
     );
 };
 

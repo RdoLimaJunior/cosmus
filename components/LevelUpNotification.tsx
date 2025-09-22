@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Badge } from '../types';
-import { TrophyIcon } from './icons/TrophyIcon';
+import { Rank } from '../types';
 import { XIcon } from './icons/XIcon';
 import { useAppContext } from '../context/AppContext';
 
-interface BadgeNotificationProps {
-  badge: Badge;
+interface LevelUpNotificationProps {
+  rank: Rank;
   onDismiss: () => void;
 }
 
-const BadgeNotification: React.FC<BadgeNotificationProps> = ({ badge, onDismiss }) => {
+const LevelUpNotification: React.FC<LevelUpNotificationProps> = ({ rank, onDismiss }) => {
   const { t } = useAppContext();
   const [isVisible, setIsVisible] = useState(false);
+  const RankIcon = rank.icon;
 
   useEffect(() => {
     setIsVisible(true);
@@ -20,7 +20,7 @@ const BadgeNotification: React.FC<BadgeNotificationProps> = ({ badge, onDismiss 
     }, 5000); // Auto-dismiss after 5 seconds
 
     return () => clearTimeout(timer);
-  }, [badge]);
+  }, [rank]);
 
   const handleDismiss = () => {
     setIsVisible(false);
@@ -29,18 +29,17 @@ const BadgeNotification: React.FC<BadgeNotificationProps> = ({ badge, onDismiss 
 
   return (
     <div
-      className={`fixed top-5 right-5 z-[100] w-full max-w-sm p-4 bg-surface-dark border-2 border-yellow-400 transition-all duration-300 ease-in-out ${
+      className={`fixed top-5 right-5 z-[100] w-full max-w-sm p-4 bg-surface-dark border-2 border-secondary-light transition-all duration-300 ease-in-out ${
         isVisible ? 'translate-x-0 opacity-100' : 'translate-x-[-200%]'
       }`}
     >
       <div className="flex items-start">
         <div className="flex-shrink-0 pt-0.5">
-          <TrophyIcon className="w-8 h-8 text-yellow-500" />
+          <RankIcon className="w-8 h-8 text-secondary-light" />
         </div>
         <div className="ml-3 w-0 flex-1">
-          <p className="text-sm font-bold text-primary-light uppercase">{t('badgeUnlocked')}</p>
-          <p className="mt-1 text-sm text-text-dark">{t(badge.title)}</p>
-          <p className="mt-1 text-xs text-muted-dark">{t(badge.description)}</p>
+          <p className="text-sm font-bold text-primary-light uppercase">{t('levelUp')}</p>
+          <p className="mt-1 text-xs text-muted-dark">{t('newRankAchieved', { rank: t(rank.nameKey) })}</p>
         </div>
         <div className="ml-4 flex-shrink-0 flex">
           <button
@@ -56,4 +55,4 @@ const BadgeNotification: React.FC<BadgeNotificationProps> = ({ badge, onDismiss 
   );
 };
 
-export default BadgeNotification;
+export default LevelUpNotification;

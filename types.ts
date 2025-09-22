@@ -35,19 +35,35 @@ export interface PerformanceData {
   score: number; // Percentage
 }
 
-export interface StudyModule {
+export interface CelestialBody {
   id: string;
   title: string;
   subject: Subject;
   content: string; // Markdown or simple text content
   isCompleted: boolean;
   summary: string;
+  description: string;
+  bodyType: 'Star' | 'Terrestrial' | 'GasGiant' | 'IceGiant' | 'DwarfPlanet' | 'Moon';
   x: number;
   y: number;
   unlocks?: string;
+  color?: string;
 }
 
 export interface ChatMessage {
     sender: 'user' | 'bot';
     text: string;
+}
+
+export interface Rank {
+  nameKey: string;
+  minLevel: number;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+export interface Quiz {
+  id: string;
+  question: string; // i18n key
+  options: string[]; // array of i18n keys
+  correctAnswer: string; // i18n key
 }
