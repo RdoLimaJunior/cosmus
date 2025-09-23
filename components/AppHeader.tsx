@@ -45,7 +45,8 @@ const AppHeader: React.FC = () => {
 
     return (
         <header className="fixed top-0 left-0 right-0 z-20 p-2 sm:p-4">
-            <div className="container mx-auto flex justify-between items-center bg-black/80 p-2 sm:p-3 border-2 border-white/20 backdrop-blur-md">
+            <div className="container mx-auto grid grid-cols-3 items-center bg-black/80 p-2 sm:p-3 border-2 border-white/20 backdrop-blur-md">
+                {/* Left Section: User Progress */}
                 <div className="flex items-center gap-3">
                     <RankIcon className="w-8 h-8 text-primary-light hidden sm:block" />
                     <div className="flex-grow">
@@ -53,34 +54,42 @@ const AppHeader: React.FC = () => {
                             <span className="text-primary-light text-xs uppercase">{t(rank.nameKey)}</span>
                             <span className="text-muted-dark text-xs">{t('level')} {level}</span>
                         </div>
-                        <div className="w-32 sm:w-48 h-4 bg-black border-2 border-gray-600 p-px">
+                        <div className="w-32 sm:w-48 h-4 bg-black border-2 border-gray-600 p-px overflow-hidden">
                             <div 
-                                className="h-full bg-secondary"
-                                style={{ width: `${progressPercentage}%`}}
+                                className="h-full bg-secondary transition-all duration-500"
+                                style={{ 
+                                    width: `${progressPercentage}%`,
+                                    backgroundImage: `linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%, transparent)`,
+                                    backgroundSize: `20px 20px`,
+                                }}
                             ></div>
                         </div>
                     </div>
                 </div>
 
-                {/* Desktop Navigation */}
-                <nav className="hidden md:flex items-center space-x-2 bg-black/20 p-1 border border-white/10">
-                    {navItems.map(item => (
-                        <NavLink
-                            key={item.to}
-                            to={item.to}
-                            className={({ isActive }) =>
-                                `flex items-center gap-2 px-3 py-1 transition-colors text-xs uppercase ${
-                                isActive ? 'bg-primary/80 text-white' : 'hover:bg-white/10 text-muted-dark'
-                                }`
-                            }
-                        >
-                            {item.icon}
-                            <span>{item.title}</span>
-                        </NavLink>
-                    ))}
-                </nav>
+                {/* Center Section: Branding & Desktop Nav */}
+                <div className="hidden md:flex flex-col items-center justify-center">
+                    <h1 className="text-2xl text-white tracking-widest">{t('appNameShort')}</h1>
+                    <nav className="flex items-center space-x-1 mt-2">
+                        {navItems.map(item => (
+                            <NavLink
+                                key={item.to}
+                                to={item.to}
+                                className={({ isActive }) =>
+                                    `flex items-center gap-1 px-2 py-1 transition-colors text-xs uppercase ${
+                                    isActive ? 'bg-primary/80 text-white' : 'hover:bg-white/10 text-muted-dark'
+                                    }`
+                                }
+                            >
+                                {item.icon}
+                                <span>{item.title}</span>
+                            </NavLink>
+                        ))}
+                    </nav>
+                </div>
 
-                <div className="flex items-center gap-2">
+                {/* Right Section: Controls */}
+                <div className="flex items-center gap-2 justify-end">
                     <div className="relative" ref={langMenuRef}>
                         <button
                             onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}

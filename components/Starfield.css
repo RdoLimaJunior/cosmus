@@ -1,66 +1,106 @@
-/*
-This creates a parallax starfield effect. 
-It uses pseudo-elements on three nested divs to create three layers of stars.
-Each layer has a different size, background-image (a radial gradient for a star), and animation duration,
-which creates the illusion of depth as they move at different speeds.
-*/
 .starfield {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #0c0a1f, #000000 80%);
 }
 
-.stars1, .stars2, .stars3 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent;
+.star {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  animation: pulse 4s infinite ease-in-out;
 }
 
-.stars1::after, .stars2::after, .stars3::after {
-    content: "";
-    position: absolute;
-    top: -2000px;
-    left: 0;
-    width: 100%;
-    height: 4000px; /* Double the height to loop smoothly */
-    background-repeat: repeat;
-    background-position: 0 0;
-    animation: move-stars linear infinite;
+.planet {
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  animation: pulse 8s infinite ease-in-out;
 }
 
-/* Small, distant stars */
-.stars1::after {
-    background-image: radial-gradient(1px 1px at 25px 25px, white, rgba(255, 255, 255, 0));
-    background-size: 50px 50px;
-    animation-duration: 200s;
+.asteroid-belt {
+  position: absolute;
+  top: 50%;
+  left: -50%;
+  width: 200%;
+  height: 15%;
+  transform: rotate(-25deg);
+  animation: drift 150s linear infinite;
 }
 
-/* Medium stars */
-.stars2::after {
-    background-image: radial-gradient(1.5px 1.5px at 50px 50px, white, rgba(255, 255, 255, 0));
-    background-size: 100px 100px;
-    animation-duration: 120s;
+.asteroid {
+  position: absolute;
+  background-color: #6B7280; /* Muted gray */
+  border-radius: 40%;
+  opacity: 0.6;
 }
 
-/* Larger, closer stars */
-.stars3::after {
-    background-image: radial-gradient(2px 2px at 75px 75px, white, rgba(255, 255, 255, 0));
-    background-size: 150px 150px;
-    animation-duration: 80s;
+.comet-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: comet-flight 30s linear infinite;
+  animation-delay: 15s;
+  pointer-events: none;
 }
 
-@keyframes move-stars {
-    from {
-        transform: translateY(0);
-    }
-    to {
-        transform: translateY(2000px);
-    }
+.comet {
+  position: absolute;
+  top: 20%;
+  left: -50px;
+  width: 5px;
+  height: 5px;
+  background-color: #67E8F9; /* Primary light color */
+  border-radius: 50%;
+  box-shadow: 0 0 15px 5px #67E8F9, 0 0 25px 15px rgba(103, 232, 249, 0.3);
+}
+
+.comet::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(to right, #67E8F9, transparent);
+  border-radius: 50%;
+  transform-origin: left center;
+  transform: translateY(-50%) rotate(-15deg);
+}
+
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes comet-flight {
+  0% {
+    transform: translateX(0) translateY(0) rotate(15deg);
+  }
+  100% {
+    transform: translateX(120vw) translateY(30vh) rotate(15deg);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: rotate(-25deg) translateX(0);
+  }
+  to {
+    transform: rotate(-25deg) translateX(-200px);
+  }
 }

@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { PracticeQuestion, Subject, Badge } from '../types';
 import { practiceQuestions, badges } from '../data/mockData';
@@ -15,7 +12,7 @@ import BadgeNotification from '../components/BadgeNotification';
 
 const Practice: React.FC = () => {
     const { t } = useAppContext();
-    const { addXp } = useUserProgress();
+    const { addXp, earnedBadges, addBadge } = useUserProgress();
 
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     const [currentQuestions, setCurrentQuestions] = useState<PracticeQuestion[]>([]);
@@ -27,7 +24,6 @@ const Practice: React.FC = () => {
     const [correctCount, setCorrectCount] = useState(0);
     const [isFinished, setIsFinished] = useState(false);
     const [unlockedBadge, setUnlockedBadge] = useState<Badge | null>(null);
-    const [earnedBadges, setEarnedBadges] = useState<string[]>([]);
 
     const shuffleArray = (array: any[]) => {
         // Simple shuffle
@@ -46,7 +42,6 @@ const Practice: React.FC = () => {
         setCorrectCount(0);
         setIsFinished(false);
         setUnlockedBadge(null);
-        // Not resetting earnedBadges to track across sessions
     };
     
     const checkBadges = useCallback((currentStreak: number, currentCorrectCount: number, currentScore: number, totalQuestions: number, sessionFinished: boolean) => {
@@ -57,28 +52,26 @@ const Practice: React.FC = () => {
 
             let criteriaMet = false;
             // Check for streak or correct answer count badges during the session
-            if (!sessionFinished) {
-                if (badge.criteria.streak && currentStreak >= badge.criteria.streak) {
-                    criteriaMet = true;
-                }
-                if (badge.criteria.correctAnswers && currentCorrectCount >= badge.criteria.correctAnswers) {
-                    criteriaMet = true;
-                }
+            if (badge.criteria.streak && currentStreak >= badge.criteria.streak) {
+                criteriaMet = true;
+            }
+            if (badge.criteria.correctAnswers && currentCorrectCount >= badge.criteria.correctAnswers) {
+                criteriaMet = true;
             }
             // Check for score percentage badges at the end of the session
             else if (sessionFinished && badge.criteria.scorePercentage && badge.criteria.minQuestions) {
-                if (totalQuestions >= badge.criteria.minQuestions && scorePercentage >= badge.criteria.minQuestions) {
+                if (totalQuestions >= badge.criteria.minQuestions && scorePercentage >= badge.criteria.scorePercentage) {
                     criteriaMet = true;
                 }
             }
             
             if (criteriaMet) {
                 setUnlockedBadge(badge);
-                setEarnedBadges(prev => [...prev, badge.id]);
+                addBadge(badge.id);
                 break; // Show one badge at a time
             }
         }
-    }, [earnedBadges]);
+    }, [earnedBadges, addBadge]);
     
     useEffect(() => {
         if (isFinished) {
@@ -142,7 +135,7 @@ const Practice: React.FC = () => {
         <>
             {unlockedBadge && <BadgeNotification badge={unlockedBadge} onDismiss={handleDismissBadge} />}
             
-            <div className="max-w-3xl mx-auto bg-black/50 border-2 border-primary/50 p-6 sm:p-8 min-h-[500px]">
+            <div className="max-w-3xl mx-auto pixelated-panel min-h-[500px]">
                 {!selectedSubject ? (
                     <div>
                         <h2 className="text-2xl text-white mb-6 text-center tracking-widest uppercase">{t('chooseSubjectToPractice')}</h2>

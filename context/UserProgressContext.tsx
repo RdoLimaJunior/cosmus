@@ -30,6 +30,8 @@ interface UserProgressContextType {
     addXp: (amount: number) => void;
     unlockedRank: Rank | null;
     setUnlockedRank: (rank: Rank | null) => void;
+    earnedBadges: string[];
+    addBadge: (badgeId: string) => void;
 }
 
 const UserProgressContext = createContext<UserProgressContextType | undefined>(undefined);
@@ -61,11 +63,20 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
         const savedXp = localStorage.getItem('cosmus-xp');
         return savedXp ? JSON.parse(savedXp) : 0;
     });
+     const [earnedBadges, setEarnedBadges] = useState<string[]>(() => {
+        const savedBadges = localStorage.getItem('cosmus-badges');
+        return savedBadges ? JSON.parse(savedBadges) : [];
+    });
     const [unlockedRank, setUnlockedRank] = useState<Rank | null>(null);
 
     useEffect(() => {
         localStorage.setItem('cosmus-xp', JSON.stringify(totalXp));
     }, [totalXp]);
+
+    useEffect(() => {
+        localStorage.setItem('cosmus-badges', JSON.stringify(earnedBadges));
+    }, [earnedBadges]);
+
 
     const levelData = useMemo(() => calculateLevelData(totalXp), [totalXp]);
 
@@ -80,7 +91,13 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
         setTotalXp(newTotalXp);
     };
 
-    const value = { totalXp, levelData, addXp, unlockedRank, setUnlockedRank };
+    const addBadge = (badgeId: string) => {
+        if (!earnedBadges.includes(badgeId)) {
+            setEarnedBadges(prev => [...prev, badgeId]);
+        }
+    };
+
+    const value = { totalXp, levelData, addXp, unlockedRank, setUnlockedRank, earnedBadges, addBadge };
 
     return (
         <UserProgressContext.Provider value={value}>

@@ -109,7 +109,7 @@ export const CelestialBodyIcon: React.FC<CelestialBodyIconProps> = ({ body, isAc
     };
     
     return (
-      <div className={`${isActive ? 'animate-pulse-glow' : ''}`}>
+      <div className={`${isActive ? 'animate-pulse-mission' : ''}`}>
         {getBodyComponent()}
       </div>
     );

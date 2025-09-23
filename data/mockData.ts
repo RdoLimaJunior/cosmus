@@ -1,7 +1,7 @@
 import { CelestialBody, PracticeQuestion, Badge, PerformanceData, Subject, Quiz } from '../types';
 
 export const celestialBodies: CelestialBody[] = [
-  // The Sun - Our star, a visual center but not a mission target
+  // The Sun - Our star, a visual center and now the starting point
   {
     id: 'sol',
     title: 'body.sol.title',
@@ -10,9 +10,10 @@ export const celestialBodies: CelestialBody[] = [
     content: 'body.sol.content',
     summary: 'body.sol.summary',
     bodyType: 'Star',
-    isCompleted: false, // Not a completable mission
+    isCompleted: false, // Journey starts here
     x: 50,
     y: 50,
+    unlocks: 'mercury',
   },
   // Inner Planets
   {
@@ -26,6 +27,7 @@ export const celestialBodies: CelestialBody[] = [
     isCompleted: false,
     x: 42,
     y: 52,
+    unlocks: 'venus',
     color: '#A0AEC0', // gray-500
   },
   {
@@ -39,6 +41,7 @@ export const celestialBodies: CelestialBody[] = [
     isCompleted: false,
     x: 35,
     y: 47,
+    unlocks: 'earth',
     color: '#F6E05E', // yellow-400
   },
   {
@@ -49,7 +52,7 @@ export const celestialBodies: CelestialBody[] = [
     content: 'body.earth.content',
     summary: 'body.earth.summary',
     bodyType: 'Terrestrial',
-    isCompleted: true, // This is where the journey begins
+    isCompleted: false, // This is no longer the starting point
     x: 27,
     y: 53,
     unlocks: 'moon',

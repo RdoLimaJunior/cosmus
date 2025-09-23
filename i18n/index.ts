@@ -184,6 +184,19 @@ const i18nData = {
     'quiz.atom_particle_q1.opt2': 'Nêutron',
     'quiz.atom_particle_q1.opt3': 'Próton',
     'quiz.atom_particle_q1.opt4': 'Fóton',
+    
+    // Reminders
+    studyReminders: "Lembretes de Estudo",
+    enableReminders: "Ativar Lembretes",
+    frequency: "Frequência",
+    daily: "Diário",
+    weekly: "Semanal",
+    time: "Horário",
+    setReminder: "Salvar Lembrete",
+    reminderSet: "Lembrete {{frequency}} definido para as {{time}}.",
+    notificationPermissionDenied: "Permissão para notificações foi negada. Por favor, habilite nas configurações do seu navegador.",
+    notificationTitle: "Hora de Estudar!",
+    notificationBody: "Sua jornada para as estrelas o aguarda. Abra o COSMUS para praticar."
   },
   en: {
     appName: 'COSMUS: Science Journey',
@@ -328,7 +341,7 @@ const i18nData = {
     'body.jupiter.title': 'Gas Giants and Gravity',
     'body.jupiter.description': 'Venture to the largest planet in the solar system to witness the power of gravity and the dynamics of gas giants.',
     'body.jupiter.summary': 'Study Jupiter\'s composition, its Great Red Spot, and how its immense mass influences the solar system.',
-    'body.jupiter.content': '# Jupiter: The King of Planets\n\n## Composition and Structure\n- Jupiter is primarily composed of hydrogen and helium.\n- It does not have a solid surface like Earth.\n- The Great Red Spot is a giant storm, larger than Earth, that has been raging for hundreds of years.\n## Gravitational Influence\n- Jupiter\'s immense mass gives it a strong gravitational field that affects other planets and acts as a "cosmic shield," attracting comets and asteroids.',
+    'body.jupiter.content': '# Júpiter: The King of Planets\n\n## Composition and Structure\n- Jupiter is primarily composed of hydrogen and helium.\n- It does not have a solid surface like Earth.\n- The Great Red Spot is a giant storm, larger than Earth, that has been raging for hundreds of years.\n## Gravitational Influence\n- Jupiter\'s immense mass gives it a strong gravitational field that affects other planets and acts as a "cosmic shield," attracting comets and asteroids.',
     'body.saturn.title': 'Saturn',
     'body.saturn.description': 'The gas giant famous for its spectacular ring system.',
     'body.saturn.summary': 'A planet with rings made of ice particles and rock.',
@@ -370,6 +383,19 @@ const i18nData = {
     'quiz.atom_particle_q1.opt2': 'Neutron',
     'quiz.atom_particle_q1.opt3': 'Proton',
     'quiz.atom_particle_q1.opt4': 'Photon',
+
+    // Reminders
+    studyReminders: "Study Reminders",
+    enableReminders: "Enable Reminders",
+    frequency: "Frequency",
+    daily: "Daily",
+    weekly: "Weekly",
+    time: "Time",
+    setReminder: "Save Reminder",
+    reminderSet: "{{frequency}} reminder set for {{time}}.",
+    notificationPermissionDenied: "Notification permission was denied. Please enable it in your browser settings.",
+    notificationTitle: "Time to Study!",
+    notificationBody: "Your journey to the stars awaits. Open COSMUS to practice."
   },
   es: {
     appName: 'COSMUS: Viaje Científico',
@@ -556,6 +582,19 @@ const i18nData = {
     'quiz.atom_particle_q1.opt2': 'Neutrón',
     'quiz.atom_particle_q1.opt3': 'Protón',
     'quiz.atom_particle_q1.opt4': 'Fotón',
+
+    // Reminders
+    studyReminders: "Recordatorios de Estudio",
+    enableReminders: "Activar Recordatorios",
+    frequency: "Frecuencia",
+    daily: "Diario",
+    weekly: "Semanal",
+    time: "Hora",
+    setReminder: "Guardar Recordatorio",
+    reminderSet: "Recordatorio {{frequency}} establecido para las {{time}}.",
+    notificationPermissionDenied: "Se denegó el permiso para notificaciones. Por favor, actívelo en la configuración de su navegador.",
+    notificationTitle: "¡Hora de Estudiar!",
+    notificationBody: "Tu viaje a las estrellas te espera. Abre COSMUS para practicar."
   }
 };
 

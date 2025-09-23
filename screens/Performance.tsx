@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { PerformanceData, Subject } from '../types';
-import { performanceHistory as mockPerformanceHistory } from '../data/mockData';
+import { performanceHistory as mockPerformanceHistory, badges } from '../data/mockData';
 import { generatePerformanceSummary } from '../services/geminiService';
 import { useAppContext } from '../context/AppContext';
 import { useUserProgress } from '../context/UserProgressContext';
 import { SparklesIcon } from '../components/icons/SparklesIcon';
 import { FireIcon } from '../components/icons/FireIcon';
 import { CalendarIcon } from '../components/icons/CalendarIcon';
+import { TrophyIcon } from '../components/icons/TrophyIcon';
 
 // MOCK DATA & HELPERS
 const VANDA_COMPETITION_DATE = new Date('2024-12-15T09:00:00Z');
@@ -54,46 +55,68 @@ const calculateStreak = (history: PerformanceData[]): number => {
 const PerformanceChart: React.FC<{ data: PerformanceData[] }> = ({ data }) => {
     const { t } = useAppContext();
     const subjects = Object.values(Subject);
-
-    const groupedData = data.reduce((acc, item) => {
-        const date = item.date;
-        if (!acc[date]) acc[date] = {};
-        acc[date][item.subject] = item.score;
-        return acc;
-    }, {} as Record<string, Record<string, number>>);
-
-    const dates = Object.keys(groupedData).sort().slice(-7); // Show last 7 entries
-
     const subjectColors: Record<Subject, string> = {
-        [Subject.Biology]: 'bg-green-500',
-        [Subject.Chemistry]: 'bg-blue-500',
-        [Subject.Physics]: 'bg-red-500',
+        [Subject.Biology]: '#4ade80', // green-400
+        [Subject.Chemistry]: '#60a5fa', // blue-400
+        [Subject.Physics]: '#f87171', // red-400
     };
 
+    const last7Dates = [...new Set(data.map(d => d.date))].sort().slice(-7);
+    const chartData = last7Dates.map(date => {
+        const scores = subjects.reduce((acc, subj) => {
+            const entry = data.find(d => d.date === date && d.subject === subj);
+            acc[subj] = entry ? entry.score : null;
+            return acc;
+        }, {} as Record<Subject, number | null>);
+        return { date, scores };
+    });
+
+    const SVG_WIDTH = 500;
+    const SVG_HEIGHT = 200;
+    const PADDING = 20;
+
     return (
-        <div className="bg-black/50 border-2 border-primary/50 p-6">
+        <div className="pixelated-panel">
             <h2 className="text-xl font-bold text-primary-light mb-6 uppercase tracking-widest">{t('scoreOverTime')}</h2>
-            <div className="flex justify-between gap-4" style={{ height: '200px' }}>
-                {dates.map(date => (
-                    <div key={date} className="flex-1 flex flex-col items-center justify-end gap-2">
-                        <div className="flex items-end justify-center gap-1 w-full h-full">
-                            {subjects.map(subject => (
-                                <div
-                                    key={subject}
-                                    className={`w-1/3 transition-all duration-500 ease-out ${subjectColors[subject]}`}
-                                    style={{ height: `${groupedData[date][subject] || 0}%` }}
-                                    title={`${t(subject.toLowerCase())}: ${groupedData[date][subject] || 0}%`}
-                                />
-                            ))}
-                        </div>
-                        <span className="text-xs text-muted-dark mt-2">{new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                    </div>
-                ))}
+            <div className="relative">
+                <svg viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} className="w-full h-auto">
+                    {/* Grid lines */}
+                    {[...Array(5)].map((_, i) => (
+                        <line key={i} x1={PADDING} y1={i * (SVG_HEIGHT - PADDING) / 4} x2={SVG_WIDTH} y2={i * (SVG_HEIGHT - PADDING) / 4} stroke="#0AF" strokeOpacity="0.1" />
+                    ))}
+                    {/* Data paths */}
+                    {subjects.map(subject => {
+                        const points = chartData
+                            .map((d, i) => ({
+                                x: PADDING + i * (SVG_WIDTH - PADDING) / (chartData.length - 1),
+                                y: d.scores[subject] !== null ? SVG_HEIGHT - PADDING - (d.scores[subject]! / 100) * (SVG_HEIGHT - PADDING * 2) : null
+                            }))
+                            .filter(p => p.y !== null);
+
+                        if (points.length < 2) return null;
+
+                        const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+
+                        return <path key={subject} d={path} fill="none" stroke={subjectColors[subject]} strokeWidth="2" />;
+                    })}
+                    {/* Data points */}
+                    {chartData.map((d, i) => subjects.map(subject => {
+                        if (d.scores[subject] === null) return null;
+                        const x = PADDING + i * (SVG_WIDTH - PADDING) / (chartData.length - 1);
+                        const y = SVG_HEIGHT - PADDING - (d.scores[subject]! / 100) * (SVG_HEIGHT - PADDING * 2);
+                        return <circle key={`${d.date}-${subject}`} cx={x} cy={y} r="3" fill={subjectColors[subject]} />;
+                    }))}
+                </svg>
+                 <div className="absolute -bottom-8 w-full flex justify-between px-5">
+                    {chartData.map(({ date }) => (
+                         <span key={date} className="text-xs text-muted-dark">{new Date(date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                    ))}
+                </div>
             </div>
-             <div className="flex justify-center gap-6 mt-6 pt-4 border-t border-primary/20">
+             <div className="flex justify-center gap-6 mt-12 pt-4 border-t border-primary/20">
                 {subjects.map(subject => (
                     <div key={subject} className="flex items-center gap-2">
-                        <div className={`w-3 h-3 ${subjectColors[subject]}`}></div>
+                        <div className={`w-3 h-3`} style={{ backgroundColor: subjectColors[subject] }}></div>
                         <span className="text-sm text-text-dark uppercase">{t(subject.toLowerCase())}</span>
                     </div>
                 ))}
@@ -116,7 +139,7 @@ const StudyActivityCalendar: React.FC<{ history: PerformanceData[]; language: st
     const dayHeaders = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
     return (
-        <div className="bg-black/50 border-2 border-primary/50 p-4 sm:p-6">
+        <div className="pixelated-panel">
             <h3 className="text-lg text-white mb-4 text-center tracking-widest uppercase">{today.toLocaleString(language, { month: 'long', year: 'numeric' })}</h3>
             <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center">
                 {dayHeaders.map(day => <div key={day} className="text-xs font-bold text-muted-dark uppercase">{t(`date.${day}`)}</div>)}
@@ -126,7 +149,7 @@ const StudyActivityCalendar: React.FC<{ history: PerformanceData[]; language: st
                     const isToday = date.toDateString() === today.toDateString();
                     const hasActivity = studyDates.has(date.toDateString());
                     return (
-                        <div key={day} className={`w-8 h-8 sm:w-10 sm:h-10 mx-auto flex items-center justify-center text-xs border-2 rounded-full ${isToday ? 'border-secondary' : 'border-transparent'} ${hasActivity ? 'bg-primary/80 text-white' : 'text-muted-dark'}`}>
+                        <div key={day} className={`w-8 h-8 sm:w-10 sm:h-10 mx-auto flex items-center justify-center text-xs border-2 ${isToday ? 'border-secondary' : 'border-transparent'} ${hasActivity ? 'bg-primary/80 text-white' : 'text-muted-dark'}`}>
                             {day}
                         </div>
                     );
@@ -153,7 +176,7 @@ const CountdownCard: React.FC = () => {
     ];
 
     return (
-         <div className="bg-black/50 border-2 border-primary/50 p-6">
+         <div className="pixelated-panel">
             <h3 className="text-lg text-white mb-4 text-center tracking-widest uppercase">{t('performance.countdownTitle')}</h3>
             <div className="grid grid-cols-4 gap-2 text-center">
                 {timeComponents.map(({label, value}) => (
@@ -170,7 +193,7 @@ const CountdownCard: React.FC = () => {
 // MAIN COMPONENT
 const Performance: React.FC = () => {
     const { t, language } = useAppContext();
-    const { levelData } = useUserProgress();
+    const { levelData, earnedBadges } = useUserProgress();
     const [summary, setSummary] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -213,8 +236,8 @@ const Performance: React.FC = () => {
              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">
                 {t('performance.welcome', { rank: t(levelData.rank.nameKey) })}
             </h1>
-            <div className="space-y-6">
-                <div className="bg-black/50 border-2 border-primary/50 p-6 min-h-[120px]">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="pixelated-panel lg:col-span-2 min-h-[120px]">
                     <h2 className="flex items-center gap-2 text-xl font-bold text-primary-light mb-4 uppercase tracking-widest">
                         <SparklesIcon className="w-6 h-6" /> {t('aiSummaryTitle')}
                     </h2>
@@ -223,37 +246,56 @@ const Performance: React.FC = () => {
                     {!isLoading && !error && <p className="text-text-dark leading-relaxed text-sm">{summary}</p>}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-black/50 border-2 border-primary/50 p-6 flex items-center justify-between">
-                        <div>
-                            <h3 className="text-lg text-white uppercase tracking-widest">{t('performance.streakTitle')}</h3>
-                            <p className="text-sm text-muted-dark">
-                                {streak > 0 
-                                    ? t('performance.streakDescriptionActive', { streak }) 
-                                    : t('performance.streakDescriptionInactive')}
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <FireIcon className={`w-12 h-12 ${streak > 0 ? 'text-orange-500' : 'text-gray-600'}`} />
-                            <p className="text-2xl font-bold text-primary-light">{streak} <span className="text-sm">{t('performance.days')}</span></p>
-                        </div>
+                <div className="pixelated-panel flex items-center justify-between">
+                    <div>
+                        <h3 className="text-lg text-white uppercase tracking-widest">{t('performance.streakTitle')}</h3>
+                        <p className="text-sm text-muted-dark">
+                            {streak > 0 
+                                ? t('performance.streakDescriptionActive', { streak }) 
+                                : t('performance.streakDescriptionInactive')}
+                        </p>
                     </div>
-                     <div className="bg-black/50 border-2 border-primary/50 p-6 flex items-center justify-between">
-                        <div>
-                            <h3 className="text-lg text-white uppercase tracking-widest">{t('performance.totalSessionsTitle')}</h3>
-                            <p className="text-sm text-muted-dark">{t('performance.totalSessionsDescription')}</p>
-                        </div>
-                        <div className="text-center">
-                             <CalendarIcon className="w-12 h-12 text-primary-light" />
-                            <p className="text-2xl font-bold text-primary-light">{studyDaysThisMonth} <span className="text-sm">{t('performance.days')}</span></p>
-                        </div>
+                    <div className="text-center">
+                        <FireIcon className={`w-12 h-12 ${streak > 0 ? 'text-orange-500' : 'text-gray-600'}`} />
+                        <p className="text-2xl font-bold text-primary-light">{streak} <span className="text-sm">{t('performance.days')}</span></p>
+                    </div>
+                </div>
+                 <div className="pixelated-panel flex items-center justify-between">
+                    <div>
+                        <h3 className="text-lg text-white uppercase tracking-widest">{t('performance.totalSessionsTitle')}</h3>
+                        <p className="text-sm text-muted-dark">{t('performance.totalSessionsDescription')}</p>
+                    </div>
+                    <div className="text-center">
+                         <CalendarIcon className="w-12 h-12 text-primary-light" />
+                        <p className="text-2xl font-bold text-primary-light">{studyDaysThisMonth} <span className="text-sm">{t('performance.days')}</span></p>
                     </div>
                 </div>
 
-                <CountdownCard />
-                <StudyActivityCalendar history={performanceHistory} language={language} />
+                <div className="lg:col-span-2"><CountdownCard /></div>
 
-                {performanceHistory.length > 0 && <PerformanceChart data={performanceHistory} />}
+                 <div className="pixelated-panel lg:col-span-2">
+                    <h2 className="flex items-center gap-2 text-xl font-bold text-primary-light mb-4 uppercase tracking-widest">
+                        <TrophyIcon className="w-6 h-6" /> Emblemas Conquistados
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {badges.map(badge => {
+                            const isEarned = earnedBadges.includes(badge.id);
+                            return (
+                                <div key={badge.id} className={`flex items-center gap-4 p-3 bg-black/40 border-2 ${isEarned ? 'border-yellow-400/50' : 'border-gray-700/50'} transition-opacity duration-500 ${!isEarned && 'opacity-50'}`}>
+                                    <TrophyIcon className={`w-10 h-10 flex-shrink-0 ${isEarned ? 'text-yellow-400' : 'text-gray-600'}`} />
+                                    <div>
+                                        <h4 className={`font-bold text-sm uppercase ${isEarned ? 'text-white' : 'text-muted-dark'}`}>{t(badge.title)}</h4>
+                                        <p className="text-xs text-muted-dark">{t(badge.description)}</p>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+
+                <div className="lg:col-span-2"><StudyActivityCalendar history={performanceHistory} language={language} /></div>
+                {performanceHistory.length > 0 && <div className="lg:col-span-2"><PerformanceChart data={performanceHistory} /></div>}
             </div>
         </div>
     );

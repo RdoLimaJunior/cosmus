@@ -14,9 +14,8 @@ interface SectorMapProps {
 const buildJourney = (allBodies: CelestialBody[]): CelestialBody[] => {
     const journey: CelestialBody[] = [];
     const bodyMap = new Map(allBodies.map(b => [b.id, b]));
-    let currentId: string | undefined = 'earth';
+    let currentId: string | undefined = 'sol';
 
-    // Build the main quest line
     while (currentId && bodyMap.has(currentId)) {
         const body = bodyMap.get(currentId)!;
         journey.push(body);
@@ -24,10 +23,9 @@ const buildJourney = (allBodies: CelestialBody[]): CelestialBody[] => {
         currentId = body.unlocks;
     }
     
-    // Add any remaining bodies that aren't part of the main unlock path
     const remainingBodies = Array.from(bodyMap.values())
         .filter(b => b.bodyType !== 'Star')
-        .sort((a,b) => a.x - b.x); // Simple sort for some consistency
+        .sort((a,b) => a.x - b.x);
 
     return [...journey, ...remainingBodies];
 };
@@ -36,72 +34,86 @@ const SectorMap: React.FC<SectorMapProps> = ({ bodies, onSelectBody, activeBodyI
     const { t } = useAppContext();
     
     const journeyBodies = useMemo(() => buildJourney(bodies), [bodies]);
-    const bodyMap = useMemo(() => new Map(bodies.map(b => [b.id, b])), [bodies]);
 
     const findPreviousBody = (currentIndex: number) => {
         if (currentIndex === 0) return null;
         const currentBody = journeyBodies[currentIndex];
-        // Find a body that unlocks the current one
         return bodies.find(b => b.unlocks === currentBody.id) || null;
     }
 
     return (
         <div 
-            className="w-full h-full overflow-y-auto"
-            style={{
-                background: 'linear-gradient(to bottom, #0c0a1f, #000000 50%)'
-            }}
+            className="w-full h-full overflow-y-auto overflow-x-hidden"
+            style={{ scrollbarWidth: 'thin', scrollbarColor: '#0AF #080812' }}
         >
-            <div className="relative flex flex-col items-center max-w-sm mx-auto pt-10 pb-20">
+            <div className="relative flex flex-col items-center w-full min-h-full px-20 py-10">
                 {journeyBodies.map((body, index) => {
                     const prevBody = findPreviousBody(index);
                     const isLocked = prevBody ? !prevBody.isCompleted : false;
                     const isAvailable = !isLocked && !body.isCompleted;
+                    const isPathActive = prevBody ? prevBody.isCompleted : false;
 
                     let pathColor = 'bg-gray-700';
-                    if (body.isCompleted) pathColor = 'bg-teal-500';
-                    if (isAvailable) pathColor = 'bg-primary';
+                    if (isPathActive) pathColor = 'bg-primary/50';
 
                     return (
                         <div key={body.id} className="flex flex-col items-center w-full">
                             {/* Path from previous body */}
                             {index > 0 && (
-                                <div className={`w-1 flex-grow h-24 ${pathColor}`}></div>
+                                <div className={`w-1 h-24 md:h-32 relative overflow-hidden ${pathColor}`}>
+                                    {isPathActive && !body.isCompleted && (
+                                        <div 
+                                            className="absolute inset-0 bg-gradient-to-b from-primary/0 via-primary-light to-primary/0 opacity-80"
+                                            style={{
+                                                animation: `path-flow 3s ease-in-out infinite`,
+                                                animationName: 'path-flow-vertical'
+                                            }}
+                                        ></div>
+                                    )}
+                                </div>
                             )}
 
                             {/* Celestial Body Node */}
-                            <button
-                                onClick={() => onSelectBody(body)}
-                                disabled={isLocked}
-                                className={`relative flex flex-col items-center group transition-transform duration-300 ${isLocked ? 'cursor-not-allowed' : 'hover:scale-105'}`}
-                            >
-                                <div className={`transition-all duration-300 p-2 border-2 ${activeBodyId === body.id ? 'border-secondary' : 'border-transparent'}`}>
-                                    <CelestialBodyIcon
-                                        body={body}
-                                        isActive={isAvailable}
-                                        size={body.bodyType === 'GasGiant' ? 96 : body.bodyType === 'Terrestrial' ? 64 : 48}
-                                    />
-                                </div>
-                                
-                                <h3 className={`mt-2 text-base uppercase ${isLocked ? 'text-muted-dark' : 'text-white'}`}>
-                                    {t(body.title)}
-                                </h3>
+                            <div className="flex flex-col items-center">
+                                <button
+                                    onClick={() => onSelectBody(body)}
+                                    disabled={isLocked}
+                                    className={`relative flex flex-col items-center group transition-transform duration-300 my-4 ${isLocked ? 'cursor-not-allowed' : 'hover:scale-105'}`}
+                                >
+                                    <div className={`transition-all duration-300 p-2 border-2 rounded-full ${activeBodyId === body.id ? 'border-secondary' : 'border-transparent'}`}>
+                                        <CelestialBodyIcon
+                                            body={body}
+                                            isActive={isAvailable}
+                                            size={body.bodyType === 'Star' ? 128 : body.bodyType === 'GasGiant' ? 96 : 64}
+                                        />
+                                    </div>
+                                    
+                                    <h3 className={`mt-2 text-base uppercase whitespace-nowrap ${isLocked ? 'text-muted-dark' : 'text-white'}`}>
+                                        {t(body.title)}
+                                    </h3>
 
-                                {isLocked && (
-                                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                        <LockClosedIcon className="w-12 h-12 text-gray-400" />
-                                    </div>
-                                )}
-                                {body.isCompleted && (
-                                    <div className="absolute -top-2 -right-2 bg-background-dark p-1">
-                                         <CheckCircleIcon className="w-8 h-8 text-teal-400" />
-                                    </div>
-                                )}
-                            </button>
+                                    {isLocked && (
+                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-full">
+                                            <LockClosedIcon className="w-12 h-12 text-gray-400" />
+                                        </div>
+                                    )}
+                                    {body.isCompleted && (
+                                        <div className="absolute -top-2 -right-2 bg-background-dark p-1 rounded-full">
+                                             <CheckCircleIcon className="w-8 h-8 text-teal-400" />
+                                        </div>
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     );
                 })}
             </div>
+             <style>{`
+                @keyframes path-flow-vertical {
+                    0% { transform: translateY(-101%); }
+                    100% { transform: translateY(101%); }
+                }
+            `}</style>
         </div>
     );
 };

@@ -6,6 +6,81 @@ const URLS_TO_CACHE = [
   '/index.html'
 ];
 
+let reminderTimeoutId = null;
+let reminderData = null; 
+
+function showReminder() {
+  if (reminderData) {
+    const { title, body } = reminderData;
+    self.registration.showNotification(title, {
+      body,
+      icon: '/icon.svg',
+      tag: 'cosmus-study-reminder'
+    });
+    // Re-schedule for the next occurrence
+    scheduleNextNotification(reminderData);
+  }
+}
+
+function scheduleNextNotification(data) {
+  if (reminderTimeoutId) {
+    clearTimeout(reminderTimeoutId);
+  }
+
+  const [hour, minute] = data.time.split(':').map(Number);
+  const now = new Date();
+  
+  let nextNotificationTime = new Date();
+  nextNotificationTime.setHours(hour, minute, 0, 0);
+
+  // Determine the next valid time slot
+  while (nextNotificationTime <= now) {
+    if (data.frequency === 'daily') {
+      nextNotificationTime.setDate(nextNotificationTime.getDate() + 1);
+    } else { // weekly
+      nextNotificationTime.setDate(nextNotificationTime.getDate() + 7);
+    }
+  }
+
+  const delay = nextNotificationTime.getTime() - now.getTime();
+
+  if (delay > 0) {
+    reminderTimeoutId = setTimeout(showReminder, delay);
+  }
+}
+
+self.addEventListener('message', (event) => {
+  if (event.data.type === 'schedule-reminder') {
+    reminderData = event.data.payload;
+    scheduleNextNotification(reminderData);
+  } else if (event.data.type === 'cancel-reminder') {
+    if (reminderTimeoutId) {
+      clearTimeout(reminderTimeoutId);
+      reminderTimeoutId = null;
+    }
+    reminderData = null;
+  }
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      if (clientList.length > 0) {
+        let client = clientList[0];
+        for (let i = 0; i < clientList.length; i++) {
+          if (clientList[i].focused) {
+            client = clientList[i];
+          }
+        }
+        return client.focus();
+      }
+      return clients.openWindow('/');
+    })
+  );
+});
+
+
 // Install the service worker and cache the app shell
 self.addEventListener('install', event => {
   event.waitUntil(
