@@ -1,301 +1,175 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { PerformanceData, Subject } from '../types';
-import { performanceHistory as mockPerformanceHistory, badges } from '../data/mockData';
-import { generatePerformanceSummary } from '../services/geminiService';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+} from 'recharts';
+import { performanceHistory } from '../data/mockData';
+import { badges as allBadges } from '../data/mockData';
 import { useAppContext } from '../context/AppContext';
 import { useUserProgress } from '../context/UserProgressContext';
-import { SparklesIcon } from '../components/icons/SparklesIcon';
-import { FireIcon } from '../components/icons/FireIcon';
-import { CalendarIcon } from '../components/icons/CalendarIcon';
+import { generatePerformanceSummary } from '../services/geminiService';
+import { Subject } from '../types';
 import { TrophyIcon } from '../components/icons/TrophyIcon';
+import { SparklesIcon } from '../components/icons/SparklesIcon';
 
-// MOCK DATA & HELPERS
-const VANDA_COMPETITION_DATE = new Date('2024-12-15T09:00:00Z');
-
-const calculateTimeLeft = () => {
-    const difference = +VANDA_COMPETITION_DATE - +new Date();
-    let timeLeft: { [key: string]: number } = {};
-
-    if (difference > 0) {
-        timeLeft = {
-            days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-            hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-            minutes: Math.floor((difference / 1000 / 60) % 60),
-            seconds: Math.floor((difference / 1000) % 60),
-        };
-    }
-    return timeLeft;
-};
-
-const calculateStreak = (history: PerformanceData[]): number => {
-    if (history.length === 0) return 0;
-    
-    const studyDates = new Set(history.map(item => item.date));
-    const formatDate = (d: Date) => {
-        const date = new Date(d);
-        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-        return date.toISOString().split('T')[0];
-    }
-    
-    let streak = 0;
-    let currentDate = new Date();
-    
-    if (!studyDates.has(formatDate(currentDate))) {
-        currentDate.setDate(currentDate.getDate() - 1);
-    }
-    
-    while (studyDates.has(formatDate(currentDate))) {
-        streak++;
-        currentDate.setDate(currentDate.getDate() - 1);
-    }
-    return streak;
-};
-
-// SUB-COMPONENTS
-const PerformanceChart: React.FC<{ data: PerformanceData[] }> = ({ data }) => {
-    const { t } = useAppContext();
-    const subjects = Object.values(Subject);
-    const subjectColors: Record<Subject, string> = {
-        [Subject.Biology]: '#4ade80', // green-400
-        [Subject.Chemistry]: '#60a5fa', // blue-400
-        [Subject.Physics]: '#f87171', // red-400
-    };
-
-    const last7Dates = [...new Set(data.map(d => d.date))].sort().slice(-7);
-    const chartData = last7Dates.map(date => {
-        const scores = subjects.reduce((acc, subj) => {
-            const entry = data.find(d => d.date === date && d.subject === subj);
-            acc[subj] = entry ? entry.score : null;
-            return acc;
-        }, {} as Record<Subject, number | null>);
-        return { date, scores };
-    });
-
-    const SVG_WIDTH = 500;
-    const SVG_HEIGHT = 200;
-    const PADDING = 20;
-
-    return (
-        <div className="pixelated-panel">
-            <h2 className="text-xl font-bold text-primary-light mb-6 uppercase tracking-widest">{t('scoreOverTime')}</h2>
-            <div className="relative">
-                <svg viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} className="w-full h-auto">
-                    {/* Grid lines */}
-                    {[...Array(5)].map((_, i) => (
-                        <line key={i} x1={PADDING} y1={i * (SVG_HEIGHT - PADDING) / 4} x2={SVG_WIDTH} y2={i * (SVG_HEIGHT - PADDING) / 4} stroke="#0AF" strokeOpacity="0.1" />
-                    ))}
-                    {/* Data paths */}
-                    {subjects.map(subject => {
-                        const points = chartData
-                            .map((d, i) => ({
-                                x: PADDING + i * (SVG_WIDTH - PADDING) / (chartData.length - 1),
-                                y: d.scores[subject] !== null ? SVG_HEIGHT - PADDING - (d.scores[subject]! / 100) * (SVG_HEIGHT - PADDING * 2) : null
-                            }))
-                            .filter(p => p.y !== null);
-
-                        if (points.length < 2) return null;
-
-                        const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-
-                        return <path key={subject} d={path} fill="none" stroke={subjectColors[subject]} strokeWidth="2" />;
-                    })}
-                    {/* Data points */}
-                    {chartData.map((d, i) => subjects.map(subject => {
-                        if (d.scores[subject] === null) return null;
-                        const x = PADDING + i * (SVG_WIDTH - PADDING) / (chartData.length - 1);
-                        const y = SVG_HEIGHT - PADDING - (d.scores[subject]! / 100) * (SVG_HEIGHT - PADDING * 2);
-                        return <circle key={`${d.date}-${subject}`} cx={x} cy={y} r="3" fill={subjectColors[subject]} />;
-                    }))}
-                </svg>
-                 <div className="absolute -bottom-8 w-full flex justify-between px-5">
-                    {chartData.map(({ date }) => (
-                         <span key={date} className="text-xs text-muted-dark">{new Date(date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                    ))}
-                </div>
-            </div>
-             <div className="flex justify-center gap-6 mt-12 pt-4 border-t border-primary/20">
-                {subjects.map(subject => (
-                    <div key={subject} className="flex items-center gap-2">
-                        <div className={`w-3 h-3`} style={{ backgroundColor: subjectColors[subject] }}></div>
-                        <span className="text-sm text-text-dark uppercase">{t(subject.toLowerCase())}</span>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-const StudyActivityCalendar: React.FC<{ history: PerformanceData[]; language: string }> = ({ history, language }) => {
-    const { t } = useAppContext();
-    const today = new Date();
-    const month = today.getMonth();
-    const year = today.getFullYear();
-
-    const studyDates = useMemo(() => new Set(history.map(item => new Date(item.date).toDateString())), [history]);
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
-
-    const calendarDays = [...Array(firstDayOfMonth).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
-    const dayHeaders = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-
-    return (
-        <div className="pixelated-panel">
-            <h3 className="text-lg text-white mb-4 text-center tracking-widest uppercase">{today.toLocaleString(language, { month: 'long', year: 'numeric' })}</h3>
-            <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center">
-                {dayHeaders.map(day => <div key={day} className="text-xs font-bold text-muted-dark uppercase">{t(`date.${day}`)}</div>)}
-                {calendarDays.map((day, index) => {
-                    if (!day) return <div key={`e-${index}`} />;
-                    const date = new Date(year, month, day);
-                    const isToday = date.toDateString() === today.toDateString();
-                    const hasActivity = studyDates.has(date.toDateString());
-                    return (
-                        <div key={day} className={`w-8 h-8 sm:w-10 sm:h-10 mx-auto flex items-center justify-center text-xs border-2 ${isToday ? 'border-secondary' : 'border-transparent'} ${hasActivity ? 'bg-primary/80 text-white' : 'text-muted-dark'}`}>
-                            {day}
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
-    );
-};
-
-const CountdownCard: React.FC = () => {
-    const { t } = useAppContext();
-    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-
-    useEffect(() => {
-        const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
-        return () => clearInterval(timer);
-    }, []);
-
-    const timeComponents = [
-        { label: 'days', value: timeLeft.days },
-        { label: 'hours', value: timeLeft.hours },
-        { label: 'minutes', value: timeLeft.minutes },
-        { label: 'seconds', value: timeLeft.seconds },
-    ];
-
-    return (
-         <div className="pixelated-panel">
-            <h3 className="text-lg text-white mb-4 text-center tracking-widest uppercase">{t('performance.countdownTitle')}</h3>
-            <div className="grid grid-cols-4 gap-2 text-center">
-                {timeComponents.map(({label, value}) => (
-                    <div key={label} className="bg-black/40 p-2">
-                        <div className="text-3xl font-bold text-secondary-light">{String(value || 0).padStart(2, '0')}</div>
-                        <div className="text-xs text-muted-dark uppercase">{t(`performance.${label}`)}</div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-// MAIN COMPONENT
 const Performance: React.FC = () => {
     const { t, language } = useAppContext();
-    const { levelData, earnedBadges } = useUserProgress();
-    const [summary, setSummary] = useState<string>('');
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-    const [performanceHistory] = useState<PerformanceData[]>(mockPerformanceHistory);
+    const { earnedBadges } = useUserProgress();
+    const [summary, setSummary] = useState('');
+    const [isLoadingSummary, setIsLoadingSummary] = useState(true);
 
+    const userBadges = useMemo(() => {
+        return allBadges.filter(badge => earnedBadges.includes(badge.id));
+    }, [earnedBadges]);
+    
     useEffect(() => {
         const fetchSummary = async () => {
-            setIsLoading(true);
-            setError(null);
+            if (performanceHistory.length === 0) {
+                setSummary(t('performance.noData'));
+                setIsLoadingSummary(false);
+                return;
+            }
+            setIsLoadingSummary(true);
             try {
-                if (performanceHistory.length > 0) {
-                    const generatedSummary = await generatePerformanceSummary(performanceHistory, language);
-                    setSummary(generatedSummary);
-                } else {
-                    setSummary(t('performanceNoData'));
-                }
-            } catch (err) {
-                console.error(err);
-                setError(t('performanceError'));
+                const generatedSummary = await generatePerformanceSummary(performanceHistory, language);
+                setSummary(generatedSummary);
+            } catch (error) {
+                console.error("Failed to generate performance summary:", error);
+                setSummary(t('performance.summaryError'));
             } finally {
-                setIsLoading(false);
+                setIsLoadingSummary(false);
             }
         };
         fetchSummary();
-    }, [language, t, performanceHistory]);
+    }, [language, t]);
 
-    const streak = useMemo(() => calculateStreak(performanceHistory), [performanceHistory]);
-    const studyDaysThisMonth = useMemo(() => {
-        const today = new Date();
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
-        return new Set(performanceHistory.filter(item => {
-            const itemDate = new Date(item.date);
-            return itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear;
-        }).map(item => item.date)).size;
-    }, [performanceHistory]);
-    
+    const subjectColors = {
+        [Subject.Biology]: '#48BB78', // green-500
+        [Subject.Chemistry]: '#4299E1', // blue-400
+        [Subject.Physics]: '#E53E3E', // red-600
+    };
+
+    const overallAverage = useMemo(() => {
+        if (performanceHistory.length === 0) return 0;
+        const totalScore = performanceHistory.reduce((acc, curr) => acc + curr.score, 0);
+        return Math.round(totalScore / performanceHistory.length);
+    }, []);
+
+    const recentActivity = useMemo(() => {
+        if (performanceHistory.length === 0) return t('performance.noRecentActivity');
+        const lastSession = performanceHistory[performanceHistory.length - 1];
+        return `${t(lastSession.subject.toLowerCase())}: ${lastSession.score}% ${t('on')} ${new Date(lastSession.date).toLocaleDateString(language)}`;
+    }, [t, language]);
+
+    const dataGroupedBySubject = useMemo(() => {
+        const data = performanceHistory.reduce<Record<string, { date: string; score: number }[]>>((acc, item) => {
+            if (!acc[item.subject]) {
+                acc[item.subject] = [];
+            }
+            acc[item.subject].push({ date: item.date, score: item.score });
+            return acc;
+        }, {});
+        return data;
+    }, []);
+
+
     return (
-        <div className="max-w-4xl mx-auto">
-             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">
-                {t('performance.welcome', { rank: t(levelData.rank.nameKey) })}
-            </h1>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="pixelated-panel lg:col-span-2 min-h-[120px]">
-                    <h2 className="flex items-center gap-2 text-xl font-bold text-primary-light mb-4 uppercase tracking-widest">
-                        <SparklesIcon className="w-6 h-6" /> {t('aiSummaryTitle')}
-                    </h2>
-                    {isLoading && <div className="flex items-center gap-2 text-muted-dark"><div className="w-5 h-5 border-2 border-primary-light border-t-transparent rounded-full animate-spin"></div><span>{t('performanceGenerating')}</span></div>}
-                    {error && <p className="text-red-400">{error}</p>}
-                    {!isLoading && !error && <p className="text-text-dark leading-relaxed text-sm">{summary}</p>}
-                </div>
+        <div className="space-y-8 animate-fade-in">
+            {/* Page Header */}
+            <h1 className="text-3xl text-white uppercase tracking-widest">{t('navPerformance')}</h1>
 
-                <div className="pixelated-panel flex items-center justify-between">
-                    <div>
-                        <h3 className="text-lg text-white uppercase tracking-widest">{t('performance.streakTitle')}</h3>
-                        <p className="text-sm text-muted-dark">
-                            {streak > 0 
-                                ? t('performance.streakDescriptionActive', { streak }) 
-                                : t('performance.streakDescriptionInactive')}
-                        </p>
-                    </div>
-                    <div className="text-center">
-                        <FireIcon className={`w-12 h-12 ${streak > 0 ? 'text-orange-500' : 'text-gray-600'}`} />
-                        <p className="text-2xl font-bold text-primary-light">{streak} <span className="text-sm">{t('performance.days')}</span></p>
-                    </div>
+            {/* AI Summary Panel */}
+            <div className="pixelated-panel">
+                <h2 className="flex items-center gap-2 text-xl text-primary-light mb-4 uppercase tracking-wider">
+                    <SparklesIcon className="w-6 h-6" />
+                    {t('performance.summaryTitle')}
+                </h2>
+                <div className="min-h-[6rem] p-4 bg-black/30">
+                    {isLoadingSummary ? (
+                        <div className="flex items-center justify-center h-full text-muted-dark">
+                            <div className="animate-pulse">{t('performance.loadingSummary')}</div>
+                        </div>
+                    ) : (
+                        <p className="text-text-dark leading-relaxed">{summary}</p>
+                    )}
                 </div>
-                 <div className="pixelated-panel flex items-center justify-between">
-                    <div>
-                        <h3 className="text-lg text-white uppercase tracking-widest">{t('performance.totalSessionsTitle')}</h3>
-                        <p className="text-sm text-muted-dark">{t('performance.totalSessionsDescription')}</p>
-                    </div>
-                    <div className="text-center">
-                         <CalendarIcon className="w-12 h-12 text-primary-light" />
-                        <p className="text-2xl font-bold text-primary-light">{studyDaysThisMonth} <span className="text-sm">{t('performance.days')}</span></p>
-                    </div>
+            </div>
+
+            {/* Key Stats */}
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="pixelated-panel-tight">
+                    <h3 className="text-sm text-muted-dark uppercase">{t('performance.overallAverage')}</h3>
+                    <p className="text-3xl text-white font-bold">{overallAverage}%</p>
                 </div>
+                 <div className="pixelated-panel-tight">
+                    <h3 className="text-sm text-muted-dark uppercase">{t('performance.badgesEarned')}</h3>
+                    <p className="text-3xl text-white font-bold">{userBadges.length}</p>
+                </div>
+                <div className="pixelated-panel-tight">
+                    <h3 className="text-sm text-muted-dark uppercase">{t('performance.recentActivity')}</h3>
+                    <p className="text-lg text-white">{recentActivity}</p>
+                </div>
+            </div>
 
-                <div className="lg:col-span-2"><CountdownCard /></div>
+            {/* Performance Chart */}
+            <div className="pixelated-panel">
+                <h2 className="text-xl text-white mb-4 uppercase tracking-wider">{t('performance.progressChart')}</h2>
+                <div className="w-full h-80 bg-black/30 p-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart
+                            data={performanceHistory}
+                            margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
+                            <XAxis dataKey="date" stroke="#A0AEC0" tick={{ fontSize: 12 }} />
+                            <YAxis stroke="#A0AEC0" domain={[0, 100]} tick={{ fontSize: 12 }} />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    borderColor: '#4A5568',
+                                    color: '#F7FAFC'
+                                }}
+                                labelStyle={{ color: '#A0AEC0' }}
+                            />
+                            <Legend wrapperStyle={{fontSize: "12px"}} />
+                             {Object.values(Subject).map(subject => (
+                                <Line 
+                                    key={subject}
+                                    type="monotone" 
+                                    data={dataGroupedBySubject[subject]}
+                                    dataKey="score"
+                                    name={t(subject.toLowerCase())}
+                                    stroke={subjectColors[subject]}
+                                    strokeWidth={2} 
+                                    dot={{r: 4}} 
+                                    activeDot={{r: 6}} 
+                                />
+                             ))}
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
 
-                 <div className="pixelated-panel lg:col-span-2">
-                    <h2 className="flex items-center gap-2 text-xl font-bold text-primary-light mb-4 uppercase tracking-widest">
-                        <TrophyIcon className="w-6 h-6" /> Emblemas Conquistados
-                    </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {badges.map(badge => {
-                            const isEarned = earnedBadges.includes(badge.id);
-                            return (
-                                <div key={badge.id} className={`flex items-center gap-4 p-3 bg-black/40 border-2 ${isEarned ? 'border-yellow-400/50' : 'border-gray-700/50'} transition-opacity duration-500 ${!isEarned && 'opacity-50'}`}>
-                                    <TrophyIcon className={`w-10 h-10 flex-shrink-0 ${isEarned ? 'text-yellow-400' : 'text-gray-600'}`} />
-                                    <div>
-                                        <h4 className={`font-bold text-sm uppercase ${isEarned ? 'text-white' : 'text-muted-dark'}`}>{t(badge.title)}</h4>
-                                        <p className="text-xs text-muted-dark">{t(badge.description)}</p>
-                                    </div>
+            {/* Badges Section */}
+            <div className="pixelated-panel">
+                <h2 className="flex items-center gap-2 text-xl text-primary-light mb-4 uppercase tracking-wider">
+                    <TrophyIcon className="w-6 h-6" />
+                    {t('performance.earnedBadges')}
+                </h2>
+                {userBadges.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {userBadges.map(badge => (
+                            <div key={badge.id} className="p-4 bg-black/30 border border-gray-700 flex items-center gap-4">
+                                <TrophyIcon className="w-8 h-8 text-yellow-400 flex-shrink-0"/>
+                                <div>
+                                    <h3 className="font-bold text-white">{t(badge.title)}</h3>
+                                    <p className="text-xs text-muted-dark mt-1">{t(badge.description)}</p>
                                 </div>
-                            );
-                        })}
+                            </div>
+                        ))}
                     </div>
-                </div>
-
-
-                <div className="lg:col-span-2"><StudyActivityCalendar history={performanceHistory} language={language} /></div>
-                {performanceHistory.length > 0 && <div className="lg:col-span-2"><PerformanceChart data={performanceHistory} /></div>}
+                ) : (
+                    <p className="text-muted-dark text-center py-4">{t('performance.noBadges')}</p>
+                )}
             </div>
         </div>
     );

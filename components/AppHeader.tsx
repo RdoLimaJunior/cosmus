@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { useUserProgress } from '../context/UserProgressContext';
 import { MapIcon } from './icons/MapIcon';
@@ -8,12 +8,23 @@ import { ChartBarIcon } from './icons/ChartBarIcon';
 import { SettingsIcon } from './icons/SettingsIcon';
 import { GlobeIcon } from './icons/GlobeIcon';
 import InstallPWAButton from './InstallPWAButton';
+import { ChevronLeftIcon } from './icons/ChevronLeftIcon';
 
 const AppHeader: React.FC = () => {
     const { t, language, setLanguage } = useAppContext();
     const { levelData } = useUserProgress();
     const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
     const langMenuRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const [showBackButton, setShowBackButton] = useState(false);
+
+    const mainRoutes = ['/study', '/practice', '/performance', '/settings'];
+
+    useEffect(() => {
+        setShowBackButton(!mainRoutes.includes(location.pathname));
+    }, [location.pathname]);
 
     const { level, rank, progressPercentage } = levelData;
     const RankIcon = rank.icon;
@@ -26,7 +37,7 @@ const AppHeader: React.FC = () => {
     ];
 
     const languages = [
-        { code: 'pt', name: t('português') },
+        { code: 'pt', name: t('portuguese') },
         { code: 'en', name: t('english') },
         { code: 'es', name: t('spanish') },
     ];
@@ -47,22 +58,33 @@ const AppHeader: React.FC = () => {
         <header className="fixed top-0 left-0 right-0 z-20 p-2 sm:p-4">
             <div className="container mx-auto grid grid-cols-3 items-center bg-black/80 p-2 sm:p-3 border-2 border-white/20 backdrop-blur-md">
                 {/* Left Section: User Progress */}
-                <div className="flex items-center gap-3">
-                    <RankIcon className="w-8 h-8 text-primary-light hidden sm:block" />
-                    <div className="flex-grow">
-                        <div className="flex justify-between items-baseline mb-1">
-                            <span className="text-primary-light text-xs uppercase">{t(rank.nameKey)}</span>
-                            <span className="text-muted-dark text-xs">{t('level')} {level}</span>
-                        </div>
-                        <div className="w-32 sm:w-48 h-4 bg-black border-2 border-gray-600 p-px overflow-hidden">
-                            <div 
-                                className="h-full bg-secondary transition-all duration-500"
-                                style={{ 
-                                    width: `${progressPercentage}%`,
-                                    backgroundImage: `linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%, transparent)`,
-                                    backgroundSize: `20px 20px`,
-                                }}
-                            ></div>
+                <div className="flex items-center gap-2">
+                    {showBackButton && (
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="p-1 text-text-dark transition-colors hover:bg-white/10"
+                            aria-label={t('about.back')}
+                        >
+                            <ChevronLeftIcon className="w-6 h-6" />
+                        </button>
+                    )}
+                    <div className="flex items-center gap-3">
+                        <RankIcon className="w-8 h-8 text-primary-light hidden sm:block" />
+                        <div className="flex-grow">
+                            <div className="flex justify-between items-baseline mb-1">
+                                <span className="text-primary-light text-xs uppercase">{t(rank.nameKey)}</span>
+                                <span className="text-muted-dark text-xs">{t('level')} {level}</span>
+                            </div>
+                            <div className="w-32 sm:w-48 h-4 bg-black border-2 border-gray-600 p-px overflow-hidden">
+                                <div 
+                                    className="h-full bg-secondary transition-all duration-500"
+                                    style={{ 
+                                        width: `${progressPercentage}%`,
+                                        backgroundImage: `linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%, transparent)`,
+                                        backgroundSize: `20px 20px`,
+                                    }}
+                                ></div>
+                            </div>
                         </div>
                     </div>
                 </div>

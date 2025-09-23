@@ -1,14 +1,19 @@
+
 import React, { useMemo } from 'react';
 import { CelestialBody } from '../types';
 import { CelestialBodyIcon } from './icons/CelestialBodyIcon';
 import { useAppContext } from '../context/AppContext';
 import { LockClosedIcon } from './icons/LockClosedIcon';
 import { CheckCircleIcon } from './icons/CheckCircleIcon';
+import { StarIcon } from './icons/StarIcon';
 
 interface SectorMapProps {
     bodies: CelestialBody[];
     onSelectBody: (body: CelestialBody) => void;
     activeBodyId?: string | null;
+    favorites: string[];
+    onToggleFavorite: (id: string) => void;
+    filterActive: boolean;
 }
 
 const buildJourney = (allBodies: CelestialBody[]): CelestialBody[] => {
@@ -30,7 +35,7 @@ const buildJourney = (allBodies: CelestialBody[]): CelestialBody[] => {
     return [...journey, ...remainingBodies];
 };
 
-const SectorMap: React.FC<SectorMapProps> = ({ bodies, onSelectBody, activeBodyId }) => {
+const SectorMap: React.FC<SectorMapProps> = ({ bodies, onSelectBody, activeBodyId, favorites, onToggleFavorite, filterActive }) => {
     const { t } = useAppContext();
     
     const journeyBodies = useMemo(() => buildJourney(bodies), [bodies]);
@@ -53,11 +58,14 @@ const SectorMap: React.FC<SectorMapProps> = ({ bodies, onSelectBody, activeBodyI
                     const isAvailable = !isLocked && !body.isCompleted;
                     const isPathActive = prevBody ? prevBody.isCompleted : false;
 
+                    const isFavorited = favorites.includes(body.id);
+                    const isFilteredOut = filterActive && !isFavorited;
+
                     let pathColor = 'bg-gray-700';
                     if (isPathActive) pathColor = 'bg-primary/50';
 
                     return (
-                        <div key={body.id} className="flex flex-col items-center w-full">
+                        <div key={body.id} className={`flex flex-col items-center w-full transition-opacity duration-300 ${isFilteredOut ? 'opacity-20 pointer-events-none' : ''}`}>
                             {/* Path from previous body */}
                             {index > 0 && (
                                 <div className={`w-1 h-24 md:h-32 relative overflow-hidden ${pathColor}`}>
@@ -100,6 +108,21 @@ const SectorMap: React.FC<SectorMapProps> = ({ bodies, onSelectBody, activeBodyI
                                     {body.isCompleted && (
                                         <div className="absolute -top-2 -right-2 bg-background-dark p-1 rounded-full">
                                              <CheckCircleIcon className="w-8 h-8 text-teal-400" />
+                                        </div>
+                                    )}
+                                    {!isLocked && (
+                                        <div
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onToggleFavorite(body.id);
+                                            }}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); onToggleFavorite(body.id); } }}
+                                            className="absolute top-2 left-2 p-1 text-gray-600 bg-black/50 rounded-full hover:bg-black/70 z-10"
+                                            aria-label={isFavorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                                        >
+                                            <StarIcon className={`w-5 h-5 transition-colors duration-200 ${isFavorited ? 'text-yellow-400' : 'hover:text-yellow-300'}`} />
                                         </div>
                                     )}
                                 </button>

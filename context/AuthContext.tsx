@@ -40,8 +40,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     const getMockUsers = (): User[] => {
-        const users = localStorage.getItem(USERS_STORAGE_KEY);
-        return users ? JSON.parse(users) : [];
+        try {
+            const users = localStorage.getItem(USERS_STORAGE_KEY);
+            return users ? JSON.parse(users) : [];
+        } catch (error) {
+            console.error("Failed to parse users from localStorage", error);
+            return [];
+        }
     };
 
     const saveMockUsers = (users: User[]) => {

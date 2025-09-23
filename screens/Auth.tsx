@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
@@ -9,7 +9,7 @@ type FormMode = 'login' | 'register';
 
 const Auth: React.FC = () => {
     const { t } = useAppContext();
-    const { login, register } = useAuth();
+    const { login, register, currentUser } = useAuth();
     const navigate = useNavigate();
 
     const [mode, setMode] = useState<FormMode>('login');
@@ -18,6 +18,13 @@ const Auth: React.FC = () => {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        // If the user is already logged in, redirect them away from the auth page.
+        if (currentUser) {
+            navigate('/performance', { replace: true });
+        }
+    }, [currentUser, navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,9 +44,7 @@ const Auth: React.FC = () => {
             }
             
             if (result.success) {
-                setTimeout(() => {
-                    navigate('/performance');
-                }, mode === 'register' ? 1500 : 0);
+                // The useEffect above will handle the redirect after currentUser is set
             } else {
                 setError(t(result.errorKey));
             }
@@ -63,6 +68,15 @@ const Auth: React.FC = () => {
     const buttonText = mode === 'login' ? t('auth.login.button') : t('auth.register.button');
     const toggleText = mode === 'login' ? t('auth.login.noAccount') : t('auth.register.hasAccount');
     const toggleLinkText = mode === 'login' ? t('auth.register') : t('auth.login');
+
+    // Don't render the form if the user is logged in and about to be redirected.
+    if (currentUser) {
+        return (
+            <div className="min-h-screen bg-background-dark">
+                <Starfield />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background-dark text-text-dark font-sans flex items-center justify-center p-4">

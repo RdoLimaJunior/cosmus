@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CelestialBody } from '../types';
 import { celestialBodies as initialCelestialBodies } from '../data/mockData';
 import { useAppContext } from '../context/AppContext';
@@ -8,6 +8,7 @@ import SectorMap from '../components/SectorMap';
 import MissionBriefingPanel from '../components/MissionBriefingPanel';
 import ModuleView from '../components/ModuleView';
 import ChatbotWidget from '../components/ChatbotWidget';
+import { StarIcon } from '../components/icons/StarIcon';
 
 
 const Study: React.FC = () => {
@@ -17,6 +18,32 @@ const Study: React.FC = () => {
     const [missionTarget, setMissionTarget] = useState<CelestialBody | null>(null);
     const [studyingBody, setStudyingBody] = useState<CelestialBody | null>(null);
     const [moduleStartTime, setModuleStartTime] = useState<number | null>(null);
+    
+    const [favorites, setFavorites] = useState<string[]>(() => {
+        try {
+            const savedFavorites = localStorage.getItem('cosmus-favorites');
+            return savedFavorites ? JSON.parse(savedFavorites) : [];
+        } catch (error) {
+            console.error('Failed to parse favorites from localStorage', error);
+            return [];
+        }
+    });
+    
+    const [filterActive, setFilterActive] = useState(false);
+
+    useEffect(() => {
+        localStorage.setItem('cosmus-favorites', JSON.stringify(favorites));
+    }, [favorites]);
+
+    const handleToggleFavorite = (bodyId: string) => {
+        setFavorites(prevFavorites => {
+            if (prevFavorites.includes(bodyId)) {
+                return prevFavorites.filter(id => id !== bodyId);
+            } else {
+                return [...prevFavorites, bodyId];
+            }
+        });
+    };
 
     const handleSelectBody = (body: CelestialBody) => {
         if (!studyingBody) {
@@ -86,13 +113,32 @@ const Study: React.FC = () => {
 
 
     return (
-        <>
-            <div className="relative w-full h-full">
+        <div className="flex flex-col h-full">
+            <div className="flex-shrink-0 flex justify-center gap-2 mb-4">
+                <button
+                    onClick={() => setFilterActive(false)}
+                    className={`px-4 py-2 text-xs uppercase border-2 transition-colors ${!filterActive ? 'bg-primary text-white border-primary-light' : 'bg-transparent border-gray-600 text-muted-dark hover:bg-white/10 hover:border-primary'}`}
+                >
+                    {t('allModules')}
+                </button>
+                <button
+                    onClick={() => setFilterActive(true)}
+                    className={`flex items-center gap-2 px-4 py-2 text-xs uppercase border-2 transition-colors ${filterActive ? 'bg-primary text-white border-primary-light' : 'bg-transparent border-gray-600 text-muted-dark hover:bg-white/10 hover:border-primary'}`}
+                >
+                    <StarIcon className="w-4 h-4" />
+                    {t('favorites')}
+                </button>
+            </div>
+            
+            <div className="relative w-full h-full flex-grow">
                 <h1 className="sr-only">{t('navSectorMap')}</h1>
                 <SectorMap
                     bodies={celestialBodies}
                     onSelectBody={handleSelectBody}
                     activeBodyId={missionTarget?.id}
+                    favorites={favorites}
+                    onToggleFavorite={handleToggleFavorite}
+                    filterActive={filterActive}
                 />
             </div>
 
@@ -113,7 +159,7 @@ const Study: React.FC = () => {
             )}
 
             <ChatbotWidget selectedBody={studyingBody} />
-        </>
+        </div>
     );
 };
 
