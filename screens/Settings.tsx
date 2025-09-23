@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { SunIcon } from '../components/icons/SunIcon';
 import { MoonIcon } from '../components/icons/MoonIcon';
 import { BellIcon } from '../components/icons/BellIcon';
+import { LogoutIcon } from '../components/icons/LogoutIcon';
+import { InfoIcon } from '../components/icons/InfoIcon';
 
 type Language = 'pt' | 'en' | 'es';
 
 const Settings: React.FC = () => {
     const { t, theme, toggleTheme, language, setLanguage } = useAppContext();
+    const { logout } = useAuth();
 
     const [remindersEnabled, setRemindersEnabled] = useState(false);
     const [frequency, setFrequency] = useState<'daily' | 'weekly'>('daily');
@@ -28,7 +33,7 @@ const Settings: React.FC = () => {
     }, [t]);
     
     const languages: { code: Language, name: string }[] = [
-        { code: 'pt', name: t('português') },
+        { code: 'pt', name: t('portuguese') },
         { code: 'en', name: t('english') },
         { code: 'es', name: t('spanish') },
     ];
@@ -172,6 +177,29 @@ const Settings: React.FC = () => {
                         </button>
                     ))}
                 </div>
+            </div>
+
+            {/* General Settings */}
+            <div>
+                <h2 className="text-xl text-white mb-4 uppercase tracking-widest">{t('general')}</h2>
+                 <Link
+                    to="/about"
+                    className="w-full text-left p-3 border-2 bg-surface-dark border-gray-600 hover:bg-primary/20 hover:border-primary-light text-text-dark flex items-center gap-3 transition-colors text-sm"
+                >
+                    <InfoIcon className="w-5 h-5" />
+                    {t('navAbout')}
+                </Link>
+            </div>
+
+            {/* Logout Section */}
+            <div>
+                <button
+                    onClick={logout}
+                    className="w-full flex items-center justify-center gap-2 pixelated-button"
+                >
+                    <LogoutIcon className="w-5 h-5" />
+                    Sair
+                </button>
             </div>
              <style>{`
                 .peer:checked + div:before {

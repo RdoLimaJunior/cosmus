@@ -182,7 +182,7 @@ const i18nData = {
     'quiz.atom_particle_q1.q': 'Qual partícula é encontrada no núcleo de um átomo e tem uma carga positiva?',
     'quiz.atom_particle_q1.opt1': 'Elétron',
     'quiz.atom_particle_q1.opt2': 'Nêutron',
-    'quiz.atom_particle_q1.opt3': 'Próton',
+    'quiz.atom_particle_q1.opt3': 'Protón',
     'quiz.atom_particle_q1.opt4': 'Fóton',
     
     // Reminders
@@ -196,7 +196,31 @@ const i18nData = {
     reminderSet: "Lembrete {{frequency}} definido para as {{time}}.",
     notificationPermissionDenied: "Permissão para notificações foi negada. Por favor, habilite nas configurações do seu navegador.",
     notificationTitle: "Hora de Estudar!",
-    notificationBody: "Sua jornada para as estrelas o aguarda. Abra o COSMUS para praticar."
+    notificationBody: "Sua jornada para as estrelas o aguarda. Abra o COSMUS para praticar.",
+    
+    // Auth
+    'auth.login': 'Login',
+    'auth.register': 'Cadastro',
+    'auth.callsign': 'Indicativo',
+    'auth.password': 'Senha',
+    'auth.login.title': 'Acessar a Ponte de Comando',
+    'auth.login.button': 'Engajar',
+    'auth.login.noAccount': 'Não tem uma conta?',
+    'auth.register.title': 'Alistamento na Frota Estelar',
+    'auth.register.button': 'Registrar',
+    'auth.register.hasAccount': 'Já tem uma conta?',
+    'auth.error.invalidCredentials': 'Indicativo ou senha inválidos.',
+    'auth.error.callsignTaken': 'Este indicativo já está em uso.',
+    'auth.error.generic': 'Ocorreu um erro. Tente novamente.',
+    'auth.success.register': 'Registro bem-sucedido! Redirecionando para a ponte...',
+
+    // Settings & About
+    general: 'Geral',
+    navAbout: 'Sobre',
+    'about.title': 'Sobre o COSMUS',
+    'about.version': 'Versão 1.0.0',
+    'about.description': 'COSMUS é uma aplicação educacional projetada para ajudar os estudantes a se prepararem para a Competição Internacional de Ciências Vanda. Inclui materiais de estudo, testes práticos, acompanhamento de desempenho e um tutor chatbot com IA.',
+    'about.back': 'Voltar',
   },
   en: {
     appName: 'COSMUS: Science Journey',
@@ -395,7 +419,31 @@ const i18nData = {
     reminderSet: "{{frequency}} reminder set for {{time}}.",
     notificationPermissionDenied: "Notification permission was denied. Please enable it in your browser settings.",
     notificationTitle: "Time to Study!",
-    notificationBody: "Your journey to the stars awaits. Open COSMUS to practice."
+    notificationBody: "Your journey to the stars awaits. Open COSMUS to practice.",
+
+    // Auth
+    'auth.login': 'Login',
+    'auth.register': 'Register',
+    'auth.callsign': 'Callsign',
+    'auth.password': 'Password',
+    'auth.login.title': 'Access Command Bridge',
+    'auth.login.button': 'Engage',
+    'auth.login.noAccount': 'Don\'t have an account?',
+    'auth.register.title': 'Starfleet Enlistment',
+    'auth.register.button': 'Register',
+    'auth.register.hasAccount': 'Already have an account?',
+    'auth.error.invalidCredentials': 'Invalid callsign or password.',
+    'auth.error.callsignTaken': 'This callsign is already in use.',
+    'auth.error.generic': 'An error occurred. Please try again.',
+    'auth.success.register': 'Registration successful! Redirecting to the bridge...',
+
+    // Settings & About
+    general: 'General',
+    navAbout: 'About',
+    'about.title': 'About COSMUS',
+    'about.version': 'Version 1.0.0',
+    'about.description': 'COSMUS is an educational application designed to help students prepare for the Vanda International Science Competition. It features study materials, practice tests, performance tracking, and an AI-powered tutor chatbot.',
+    'about.back': 'Back',
   },
   es: {
     appName: 'COSMUS: Viaje Científico',
@@ -594,7 +642,31 @@ const i18nData = {
     reminderSet: "Recordatorio {{frequency}} establecido para las {{time}}.",
     notificationPermissionDenied: "Se denegó el permiso para notificaciones. Por favor, actívelo en la configuración de su navegador.",
     notificationTitle: "¡Hora de Estudiar!",
-    notificationBody: "Tu viaje a las estrellas te espera. Abre COSMUS para practicar."
+    notificationBody: "Tu viaje a las estrellas te espera. Abre COSMUS para practicar.",
+
+    // Auth
+    'auth.login': 'Iniciar Sesión',
+    'auth.register': 'Registrarse',
+    'auth.callsign': 'Indicativo',
+    'auth.password': 'Contraseña',
+    'auth.login.title': 'Acceder al Puente de Mando',
+    'auth.login.button': 'Activar',
+    'auth.login.noAccount': '¿No tienes una cuenta?',
+    'auth.register.title': 'Alistamiento en la Flota Estelar',
+    'auth.register.button': 'Registrarse',
+    'auth.register.hasAccount': '¿Ya tienes una cuenta?',
+    'auth.error.invalidCredentials': 'Indicativo o contraseña inválidos.',
+    'auth.error.callsignTaken': 'Este indicativo ya está en uso.',
+    'auth.error.generic': 'Ocurrió un error. Inténtalo de nuevo.',
+    'auth.success.register': '¡Registro exitoso! Redirigiendo al puente...',
+
+    // Settings & About
+    general: 'General',
+    navAbout: 'Acerca de',
+    'about.title': 'Acerca de COSMUS',
+    'about.version': 'Versión 1.0.0',
+    'about.description': 'COSMUS es una aplicación educativa diseñada para ayudar a los estudiantes a prepararse para la Competición Internacional de Ciencias Vanda. Cuenta con materiales de estudio, pruebas de práctica, seguimiento del rendimiento y un chatbot tutor con IA.',
+    'about.back': 'Volver',
   }
 };
 
