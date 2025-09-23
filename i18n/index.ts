@@ -1,3 +1,4 @@
+
 // Fix: Create the i18n data object and export it to resolve module errors.
 const i18nData = {
   pt: {
@@ -97,6 +98,7 @@ const i18nData = {
     'auth.error.invalidCredentials': 'Identificação ou senha inválidos.',
     'auth.error.callsignTaken': 'Esta identificação já está em uso.',
     'auth.error.generic': 'Ocorreu um erro. Por favor, tente novamente.',
+    'auth.logout': 'Sair',
     
     // Tela Sobre
     'about.back': 'Voltar',
@@ -324,6 +326,7 @@ const i18nData = {
     'auth.error.invalidCredentials': 'Invalid callsign or password.',
     'auth.error.callsignTaken': 'This callsign is already taken.',
     'auth.error.generic': 'An error occurred. Please try again.',
+    'auth.logout': 'Logout',
 
     // About Screen
     'about.back': 'Back',
@@ -551,6 +554,7 @@ const i18nData = {
     'auth.error.invalidCredentials': 'Identificativo o contraseña no válidos.',
     'auth.error.callsignTaken': 'Este identificativo ya está en uso.',
     'auth.error.generic': 'Ocurrió un error. Por favor, inténtalo de nuevo.',
+    'auth.logout': 'Cerrar Sesión',
     
     // Pantalla "Acerca de"
     'about.back': 'Volver',

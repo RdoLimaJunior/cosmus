@@ -175,13 +175,21 @@ const Practice: React.FC = () => {
                         <div className="space-y-4">
                             {currentQuestion.options.map(optionKey => {
                                 const translatedOption = t(optionKey);
-                                const isSelected = selectedAnswer === translatedOption;
                                 let buttonClass = 'bg-surface-dark border-gray-600 hover:bg-primary/20 hover:border-primary-light text-text-dark';
+                                let icon = null;
+
                                 if (selectedAnswer) {
-                                    if (translatedOption === t(currentQuestion.correctAnswer)) {
+                                    const isCorrectAnswer = translatedOption === t(currentQuestion.correctAnswer);
+                                    const isSelectedAnswer = selectedAnswer === translatedOption;
+
+                                    if (isCorrectAnswer) {
                                         buttonClass = 'bg-green-700/80 border-green-400 text-white';
-                                    } else if (isSelected) {
+                                        icon = <CheckCircleIcon className="w-5 h-5 flex-shrink-0" />;
+                                    } else if (isSelectedAnswer) {
                                         buttonClass = 'bg-red-700/80 border-red-400 text-white';
+                                        icon = <XCircleIcon className="w-5 h-5 flex-shrink-0" />;
+                                    } else {
+                                        buttonClass = 'bg-surface-dark border-gray-700 opacity-60 text-muted-dark';
                                     }
                                 }
 
@@ -190,9 +198,10 @@ const Practice: React.FC = () => {
                                         key={optionKey}
                                         onClick={() => handleAnswerSelect(translatedOption)}
                                         disabled={selectedAnswer !== null}
-                                        className={`w-full text-left p-4 border-2 transition-colors duration-200 text-sm ${buttonClass}`}
+                                        className={`w-full flex items-center justify-between text-left p-4 border-2 transition-all duration-200 text-sm ${buttonClass}`}
                                     >
-                                        {translatedOption}
+                                        <span className="flex-grow mr-4">{translatedOption}</span>
+                                        {icon}
                                     </button>
                                 );
                             })}
@@ -201,12 +210,12 @@ const Practice: React.FC = () => {
                         {selectedAnswer && (
                             <div className="mt-6 p-4 bg-black/30 animate-fade-in">
                                 {isCorrect ? (
-                                    <div className="flex items-center gap-2 text-green-400">
+                                    <div className="flex items-center gap-2 text-green-400 animate-pulse-correct">
                                         <CheckCircleIcon className="w-6 h-6" />
                                         <p className="font-bold uppercase">{t('correct')}</p>
                                     </div>
                                 ) : (
-                                    <div className="text-red-400">
+                                    <div className="text-red-400 animate-shake">
                                         <div className="flex items-center gap-2 font-bold mb-2 uppercase">
                                             <XCircleIcon className="w-6 h-6" />
                                             <p>{t('incorrect')}</p>
@@ -235,6 +244,22 @@ const Practice: React.FC = () => {
                 }
                 .animate-fade-in {
                     animation: fade-in 0.3s ease-out forwards;
+                }
+                @keyframes shake {
+                    10%, 90% { transform: translate3d(-1px, 0, 0); }
+                    20%, 80% { transform: translate3d(2px, 0, 0); }
+                    30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+                    40%, 60% { transform: translate3d(3px, 0, 0); }
+                }
+                .animate-shake {
+                    animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+                }
+                @keyframes pulse-correct {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                }
+                .animate-pulse-correct {
+                    animation: pulse-correct 0.5s ease-out;
                 }
             `}</style>
         </>

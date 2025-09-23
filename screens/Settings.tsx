@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -107,14 +108,14 @@ const Settings: React.FC = () => {
                         onClick={() => handleThemeChange('light')}
                         className={`w-1/2 flex items-center justify-center gap-2 py-2 transition-colors text-sm ${theme === 'light' ? 'bg-primary text-white' : 'text-muted-dark hover:bg-white/10'}`}
                     >
-                        <SunIcon className="w-5 h-5" />
+                        <SunIcon className="w-6 h-6" />
                         {t('lightTheme')}
                     </button>
                     <button
                         onClick={() => handleThemeChange('dark')}
                         className={`w-1/2 flex items-center justify-center gap-2 py-2 transition-colors text-sm ${theme === 'dark' ? 'bg-primary text-white' : 'text-muted-dark hover:bg-white/10'}`}
                     >
-                        <MoonIcon className="w-5 h-5" />
+                        <MoonIcon className="w-6 h-6" />
                         {t('darkTheme')}
                     </button>
                 </div>
@@ -132,7 +133,9 @@ const Settings: React.FC = () => {
                         </label>
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" id="reminder-toggle" className="sr-only peer" checked={remindersEnabled} onChange={(e) => handleToggleReminders(e.target.checked)} />
-                            <div className="w-11 h-6 bg-gray-500 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-dark peer-checked:bg-primary"></div>
+                            <div className="pixel-toggle-track">
+                                <div className="pixel-toggle-thumb"></div>
+                            </div>
                         </label>
                     </div>
 
@@ -162,15 +165,13 @@ const Settings: React.FC = () => {
             {/* Language Settings */}
             <div>
                 <h2 className="text-xl text-white mb-4 uppercase tracking-widest">{t('changeLanguage')}</h2>
-                <div className="space-y-3">
+                 <div className="flex items-center bg-black/30 p-1 border-2 border-gray-600">
                     {languages.map(lang => (
-                         <button
+                        <button
                             key={lang.code}
                             onClick={() => setLanguage(lang.code)}
-                            className={`w-full text-left p-3 border-2 transition-colors text-sm ${
-                                language === lang.code
-                                    ? 'bg-primary/80 border-primary-light text-white'
-                                    : 'bg-surface-dark border-gray-600 hover:bg-primary/20 hover:border-primary-light text-text-dark'
+                            className={`w-1/3 py-2 transition-colors text-sm uppercase ${
+                                language === lang.code ? 'bg-primary text-white' : 'text-muted-dark hover:bg-white/10'
                             }`}
                         >
                             {lang.name}
@@ -198,23 +199,40 @@ const Settings: React.FC = () => {
                     className="w-full flex items-center justify-center gap-2 pixelated-button"
                 >
                     <LogoutIcon className="w-5 h-5" />
-                    Sair
+                    {t('auth.logout')}
                 </button>
             </div>
              <style>{`
-                .peer:checked + div:before {
-                    transform: translateX(1.25rem);
-                    background-color: white;
+                /* Pixelated Toggle Switch */
+                .pixel-toggle-track {
+                    width: 52px;
+                    height: 28px;
+                    background-color: #2D3748; /* dark gray */
+                    border: 2px solid #4A5568;
+                    box-shadow: inset 2px 2px 0 0 #1A202C;
+                    position: relative;
+                    transition: background-color 0.2s;
                 }
-                .peer + div:before {
-                    content: '';
+                .pixel-toggle-thumb {
+                    width: 20px;
+                    height: 20px;
+                    background-color: #A0AEC0; /* gray */
+                    border: 2px solid #E2E8F0;
+                    box-shadow: inset -2px -2px 0 0 #718096;
                     position: absolute;
-                    top: 0.25rem;
-                    left: 0.25rem;
-                    width: 1.25rem;
-                    height: 1.25rem;
-                    background-color: #A0AEC0;
-                    transition: all 0.2s;
+                    top: 2px;
+                    left: 2px;
+                    transition: transform 0.2s ease-in-out;
+                }
+                .peer:checked + .pixel-toggle-track {
+                    background-color: #08D; /* primary-dark */
+                    box-shadow: inset 2px 2px 0 0 #06A;
+                }
+                .peer:checked + .pixel-toggle-track .pixel-toggle-thumb {
+                    transform: translateX(24px);
+                    background-color: #67E8F9; /* primary-light */
+                    border-color: #FFFFFF;
+                    box-shadow: inset -2px -2px 0 0 #0AF;
                 }
              `}</style>
         </div>
