@@ -1,5 +1,3 @@
-
-
 import { GoogleGenAI, Chat, GenerateContentResponse, Content } from "@google/genai";
 import { ChatMessage, PerformanceData, CelestialBody } from "../types";
 
@@ -7,6 +5,7 @@ import { ChatMessage, PerformanceData, CelestialBody } from "../types";
 let ai: GoogleGenAI | null = null;
 const getAi = (): GoogleGenAI => {
     if (!ai) {
+        // Fix: Use process.env.API_KEY as per the coding guidelines to resolve the ImportMeta error.
         ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     }
     return ai;
