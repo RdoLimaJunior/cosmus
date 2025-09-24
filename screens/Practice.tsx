@@ -11,7 +11,7 @@ import { XCircleIcon } from '../components/icons/XCircleIcon';
 import BadgeNotification from '../components/BadgeNotification';
 
 const Practice: React.FC = () => {
-    const { t } = useAppContext();
+    const { t, triggerInstallPrompt } = useAppContext();
     const { addXp, earnedBadges, addBadge } = useUserProgress();
 
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -79,8 +79,9 @@ const Practice: React.FC = () => {
              // Award XP bonus for finishing
              const bonusXp = score * 5;
              addXp(bonusXp);
+             triggerInstallPrompt();
         }
-    }, [isFinished, streak, correctCount, score, currentQuestions.length, checkBadges, addXp]);
+    }, [isFinished, streak, correctCount, score, currentQuestions.length, checkBadges, addXp, triggerInstallPrompt]);
 
 
     const handleAnswerSelect = (answer: string) => {

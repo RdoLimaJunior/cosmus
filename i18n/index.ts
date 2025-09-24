@@ -1,5 +1,3 @@
-
-
 // Fix: Create the i18n data object and export it to resolve module errors.
 const i18nData = {
   pt: {
@@ -125,6 +123,11 @@ const i18nData = {
     'gemini.chat.context.studyingModule': 'O estudante está atualmente estudando o módulo de {{subject}} sobre "{{title}}". Responda às perguntas dele dentro deste contexto.',
     'gemini.chat.context.general': 'O estudante não está em um módulo específico. Responda a perguntas gerais sobre Biologia, Química ou Física.',
     
+    // PWA Prompt
+    'pwa.prompt.title': 'Instale o COSMUS para uma experiência completa!',
+    'pwa.prompt.install': 'Instalar',
+    'pwa.prompt.dismiss': 'Depois',
+
     // Dados Mock - Corpos Celestes
     'body.sol.title': 'Sol',
     'body.sol.description': 'A estrela no centro do nosso sistema solar. Uma esfera quase perfeita de plasma quente, sua gravidade mantém o sistema solar unido. É de longe a fonte de energia mais importante para a vida na Terra.',
@@ -361,6 +364,11 @@ const i18nData = {
     'gemini.chat.context.studyingModule': 'The student is currently studying the {{subject}} module on "{{title}}". Answer their questions within this context.',
     'gemini.chat.context.general': 'The student is not in a specific module. Answer general questions about Biology, Chemistry, or Physics.',
 
+    // PWA Prompt
+    'pwa.prompt.title': 'Install COSMUS for the full experience!',
+    'pwa.prompt.install': 'Install',
+    'pwa.prompt.dismiss': 'Later',
+
     // Mock Data - Celestial Bodies
     'body.sol.title': 'Sun',
     'body.sol.description': 'The star at the center of our solar system. A nearly perfect sphere of hot plasma, its gravity holds the solar system together. It is by far the most important source of energy for life on Earth.',
@@ -596,6 +604,11 @@ const i18nData = {
     'gemini.chat.systemInstruction': 'Eres un tutor de ciencias amigable y alentador llamado "Cosmo". Estás ayudando a un estudiante a prepararse para la Competición Internacional de Ciencias Vanda. Tus respuestas deben ser claras, concisas y fáciles de entender. Usa analogías y ejemplos cuando sea apropiado. Mantén un tono positivo y motivador.',
     'gemini.chat.context.studyingModule': 'El estudiante está estudiando actualmente el módulo de {{subject}} sobre "{{title}}". Responde sus preguntas dentro de este contexto.',
     'gemini.chat.context.general': 'El estudiante no está en un módulo específico. Responde preguntas generales sobre Biología, Química o Física.',
+
+    // PWA Prompt
+    'pwa.prompt.title': '¡Instala COSMUS para una experiencia completa!',
+    'pwa.prompt.install': 'Instalar',
+    'pwa.prompt.dismiss': 'Más tarde',
 
     // Datos Falsos - Cuerpos Celestes
     'body.sol.title': 'Sol',

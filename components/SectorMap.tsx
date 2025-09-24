@@ -106,7 +106,7 @@ const SectorMap: React.FC<SectorMapProps> = ({ bodies, onSelectBody, activeBodyI
                                         </div>
                                     )}
                                     {body.isCompleted && (
-                                        <div className="absolute -top-2 -right-2 bg-background-dark p-1 rounded-full">
+                                        <div className="absolute -top-2 -right-2 bg-background-dark p-1 rounded-full drop-shadow-[0_0_5px_#2dd4bf]">
                                              <CheckCircleIcon className="w-8 h-8 text-teal-400" />
                                         </div>
                                     )}

@@ -5,8 +5,19 @@ import { ChatMessage, PerformanceData, CelestialBody } from "../types";
 let ai: GoogleGenAI | null = null;
 const getAi = (): GoogleGenAI => {
     if (!ai) {
-        // Fix: Use process.env.API_KEY as per the coding guidelines to resolve the ImportMeta error.
-        ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        // Access the API key from the window.process object injected by index.html.
+        // This is the correct way to access it in a browser environment without a bundler.
+        const apiKey = (window as any).process?.env?.API_KEY;
+
+        // Add robust error handling for the API key.
+        if (!apiKey || apiKey === 'API_KEY_PLACEHOLDER') {
+            const errorMessage = "Chave da API não encontrada ou não substituída. Por favor, configure a variável de ambiente API_KEY nas configurações de deploy do seu site (ex: Netlify).";
+            console.error(errorMessage);
+            // Alert the user in a more visible way, as this is a critical configuration error.
+            alert(errorMessage); 
+            throw new Error(errorMessage);
+        }
+        ai = new GoogleGenAI({ apiKey });
     }
     return ai;
 };

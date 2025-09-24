@@ -14,7 +14,7 @@ import BadgeNotification from '../components/BadgeNotification';
 
 
 const Study: React.FC = () => {
-    const { t } = useAppContext();
+    const { t, triggerInstallPrompt } = useAppContext();
     const { addXp, earnedBadges, addBadge } = useUserProgress();
     const [celestialBodies, setCelestialBodies] = useState<CelestialBody[]>(initialCelestialBodies);
     const [missionTarget, setMissionTarget] = useState<CelestialBody | null>(null);
@@ -102,6 +102,8 @@ const Study: React.FC = () => {
             // The count of completed modules will be the current count + 1
             const completedCount = celestialBodies.filter(b => b.isCompleted).length + 1;
             checkStudyBadges(completedCount);
+            
+            triggerInstallPrompt();
 
             setCelestialBodies(prevBodies => prevBodies.map(b => 
                 b.id === currentBody.id ? { ...b, isCompleted: true } : b

@@ -7,7 +7,6 @@ import { TargetIcon } from './icons/TargetIcon';
 import { ChartBarIcon } from './icons/ChartBarIcon';
 import { SettingsIcon } from './icons/SettingsIcon';
 import { GlobeIcon } from './icons/GlobeIcon';
-import InstallPWAButton from './InstallPWAButton';
 import { ChevronLeftIcon } from './icons/ChevronLeftIcon';
 
 const AppHeader: React.FC = () => {
@@ -55,10 +54,10 @@ const AppHeader: React.FC = () => {
     }, []);
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-20 p-2 sm:p-4">
-            <div className="container mx-auto grid grid-cols-3 items-center bg-black/80 p-2 sm:p-3 border-2 border-white/20 backdrop-blur-md">
+        <header className="fixed top-0 left-0 right-0 z-20 bg-black/80 border-b-2 border-white/20 backdrop-blur-md">
+            <div className="w-full grid grid-cols-3 items-center px-4 sm:px-8 h-20">
                 {/* Left Section: User Progress */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                     {showBackButton && (
                         <button
                             onClick={() => navigate(-1)}
@@ -141,7 +140,6 @@ const AppHeader: React.FC = () => {
                             </div>
                         )}
                     </div>
-                    <InstallPWAButton />
                 </div>
             </div>
         </header>

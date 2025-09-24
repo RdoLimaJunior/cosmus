@@ -4,6 +4,7 @@ import Starfield from './Starfield';
 import BottomNavBar from './BottomNavBar';
 import LevelUpNotification from './LevelUpNotification';
 import { useUserProgress } from '../context/UserProgressContext';
+import PWAPrompt from './PWAPrompt';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -18,7 +19,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background-dark text-text-dark font-sans text-sm flex flex-col">
+    <div className="relative min-h-screen bg-background-dark text-text-dark font-sans text-sm flex flex-col">
       {unlockedRank && (
         <LevelUpNotification 
           rank={unlockedRank} 
@@ -30,14 +31,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* 
         Main content area with padding-bottom for the fixed BottomNavBar.
         `flex-grow` allows this area to fill the available space between the header and footer.
-        Removed relative z-10 to allow fixed modals inside to create their own root stacking context.
+        `relative` and `z-10` ensure the content is always above the Starfield background.
       */}
-      <main className="flex-grow flex flex-col pt-24 pb-20 px-4 sm:px-6 lg:px-8">
+      <main className="relative z-10 flex-grow flex flex-col pt-24 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto flex-grow h-full animate-fade-in">
           {children}
         </div>
       </main>
       <BottomNavBar />
+      <PWAPrompt />
     </div>
   );
 };
