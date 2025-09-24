@@ -163,6 +163,16 @@
     <div class="scanline-overlay"></div>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script>
+      // Injeta a variável de ambiente para a chave da API.
+      // O Netlify (ou outra ferramenta de CI/CD) deve substituir 'API_KEY_PLACEHOLDER'
+      // pelo valor real da chave durante o processo de deploy.
+      window.process = {
+        env: {
+          API_KEY: 'API_KEY_PLACEHOLDER'
+        }
+      };
+    </script>
     <script type="text/babel" data-presets="typescript,react" src="/index.tsx"></script>
 </body>
 </html>

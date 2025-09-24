@@ -205,6 +205,13 @@ export const badges: Badge[] = [
     criteria: { streak: 3 }
   },
   {
+    id: 'streak-5',
+    title: 'badge.streak-5.title',
+    description: 'badge.streak-5.description',
+    type: 'practice',
+    criteria: { streak: 5 }
+  },
+  {
     id: 'correct-5',
     title: 'badge.correct-5.title',
     description: 'badge.correct-5.description',
@@ -212,11 +219,32 @@ export const badges: Badge[] = [
     criteria: { correctAnswers: 5 }
   },
   {
+    id: 'correct-20',
+    title: 'badge.correct-20.title',
+    description: 'badge.correct-20.description',
+    type: 'practice',
+    criteria: { correctAnswers: 20 }
+  },
+  {
     id: 'score-100',
     title: 'badge.score-100.title',
     description: 'badge.score-100.description',
     type: 'practice',
     criteria: { scorePercentage: 100, minQuestions: 5 }
+  },
+  {
+    id: 'study-5',
+    title: 'badge.study-5.title',
+    description: 'badge.study-5.description',
+    type: 'study',
+    criteria: { modulesCompleted: 5 }
+  },
+  {
+    id: 'perf-avg-80',
+    title: 'badge.perf-avg-80.title',
+    description: 'badge.perf-avg-80.description',
+    type: 'performance',
+    criteria: { scorePercentage: 80 }
   }
 ];
 

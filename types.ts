@@ -28,7 +28,7 @@ export interface Badge {
   id:string;
   title: string;
   description: string;
-  type: 'practice' | 'study';
+  type: 'practice' | 'study' | 'performance';
   criteria: BadgeCriteria;
 }
 

@@ -208,25 +208,33 @@ const Practice: React.FC = () => {
                         </div>
 
                         {selectedAnswer && (
-                            <div className="mt-6 p-4 bg-black/30 animate-fade-in">
-                                {isCorrect ? (
-                                    <div className="flex items-center gap-2 text-green-400 animate-pulse-correct">
-                                        <CheckCircleIcon className="w-6 h-6" />
-                                        <p className="font-bold uppercase">{t('correct')}</p>
-                                    </div>
-                                ) : (
-                                    <div className="text-red-400 animate-shake">
-                                        <div className="flex items-center gap-2 font-bold mb-2 uppercase">
-                                            <XCircleIcon className="w-6 h-6" />
-                                            <p>{t('incorrect')}</p>
+                            <div className="mt-8 pt-6 border-t-2 border-primary/30 animate-fade-in">
+                                <div className="mb-4">
+                                    {isCorrect ? (
+                                        <div className="flex items-center gap-3">
+                                            <CheckCircleIcon className="w-8 h-8 text-green-400 flex-shrink-0" />
+                                            <div>
+                                                <h3 className="text-lg font-bold uppercase text-green-400 animate-pulse-correct">{t('correct')}</h3>
+                                            </div>
                                         </div>
-                                        <p className="text-sm">{t('incorrectAnswerWas', { answer: t(currentQuestion.correctAnswer) })}</p>
-                                    </div>
-                                )}
-                                <p className="mt-2 text-sm text-muted-dark">{t(currentQuestion.explanation)}</p>
+                                    ) : (
+                                        <div className="flex items-center gap-3">
+                                            <XCircleIcon className="w-8 h-8 text-red-400 flex-shrink-0" />
+                                            <div>
+                                                <h3 className="text-lg font-bold uppercase text-red-400 animate-shake">{t('incorrect')}</h3>
+                                                <p className="text-sm text-muted-dark mt-1">{t('incorrectAnswerWas', { answer: t(currentQuestion.correctAnswer) })}</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="p-4 bg-black/30 border border-gray-700">
+                                    <p className="text-text-dark leading-relaxed">{t(currentQuestion.explanation)}</p>
+                                </div>
+                            
                                 <button
                                     onClick={handleNextQuestion}
-                                    className="w-full mt-4 pixelated-button pixelated-button-primary"
+                                    className="w-full mt-6 pixelated-button pixelated-button-primary"
                                 >
                                     {currentQuestionIndex < currentQuestions.length - 1 ? t('nextQuestion') : t('finishAttempt')}
                                 </button>

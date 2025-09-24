@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
-import { CelestialBody } from '../types';
-import { celestialBodies as initialCelestialBodies } from '../data/mockData';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { CelestialBody, Badge } from '../types';
+import { celestialBodies as initialCelestialBodies, badges as allBadges } from '../data/mockData';
 import { useAppContext } from '../context/AppContext';
 import { useUserProgress } from '../context/UserProgressContext';
 import SectorMap from '../components/SectorMap';
@@ -9,15 +10,17 @@ import MissionBriefingPanel from '../components/MissionBriefingPanel';
 import ModuleView from '../components/ModuleView';
 import ChatbotWidget from '../components/ChatbotWidget';
 import { StarIcon } from '../components/icons/StarIcon';
+import BadgeNotification from '../components/BadgeNotification';
 
 
 const Study: React.FC = () => {
     const { t } = useAppContext();
-    const { addXp } = useUserProgress();
+    const { addXp, earnedBadges, addBadge } = useUserProgress();
     const [celestialBodies, setCelestialBodies] = useState<CelestialBody[]>(initialCelestialBodies);
     const [missionTarget, setMissionTarget] = useState<CelestialBody | null>(null);
     const [studyingBody, setStudyingBody] = useState<CelestialBody | null>(null);
     const [moduleStartTime, setModuleStartTime] = useState<number | null>(null);
+    const [unlockedBadge, setUnlockedBadge] = useState<Badge | null>(null);
     
     const [favorites, setFavorites] = useState<string[]>(() => {
         try {
@@ -59,6 +62,18 @@ const Study: React.FC = () => {
         }
     };
 
+    const checkStudyBadges = useCallback((completedCount: number) => {
+        for (const badge of allBadges) {
+            if (badge.type !== 'study' || earnedBadges.includes(badge.id)) continue;
+
+            if (badge.criteria.modulesCompleted && completedCount >= badge.criteria.modulesCompleted) {
+                setUnlockedBadge(badge);
+                addBadge(badge.id);
+                break; // Show one at a time
+            }
+        }
+    }, [earnedBadges, addBadge]);
+
     const endStudySession = (currentBody: CelestialBody | null) => {
         if (!currentBody || !moduleStartTime) return;
 
@@ -83,6 +98,11 @@ const Study: React.FC = () => {
         if (bodyInState && !bodyInState.isCompleted && durationInSeconds >= MIN_DURATION_FOR_COMPLETION) {
             // This bonus is awarded in addition to the time-based XP
             addXp(COMPLETION_BONUS_XP); 
+
+            // The count of completed modules will be the current count + 1
+            const completedCount = celestialBodies.filter(b => b.isCompleted).length + 1;
+            checkStudyBadges(completedCount);
+
             setCelestialBodies(prevBodies => prevBodies.map(b => 
                 b.id === currentBody.id ? { ...b, isCompleted: true } : b
             ));
@@ -113,53 +133,56 @@ const Study: React.FC = () => {
 
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex-shrink-0 flex justify-center gap-2 mb-4">
-                <button
-                    onClick={() => setFilterActive(false)}
-                    className={`px-4 py-2 text-xs uppercase border-2 transition-colors ${!filterActive ? 'bg-primary text-white border-primary-light' : 'bg-transparent border-gray-600 text-muted-dark hover:bg-white/10 hover:border-primary'}`}
-                >
-                    {t('allModules')}
-                </button>
-                <button
-                    onClick={() => setFilterActive(true)}
-                    className={`flex items-center gap-2 px-4 py-2 text-xs uppercase border-2 transition-colors ${filterActive ? 'bg-primary text-white border-primary-light' : 'bg-transparent border-gray-600 text-muted-dark hover:bg-white/10 hover:border-primary'}`}
-                >
-                    <StarIcon className="w-4 h-4" />
-                    {t('favorites')}
-                </button>
+        <>
+            {unlockedBadge && <BadgeNotification badge={unlockedBadge} onDismiss={() => setUnlockedBadge(null)} />}
+            <div className="flex flex-col h-full">
+                <div className="flex-shrink-0 flex justify-center gap-2 mb-4">
+                    <button
+                        onClick={() => setFilterActive(false)}
+                        className={`px-4 py-2 text-xs uppercase border-2 transition-colors ${!filterActive ? 'bg-primary text-white border-primary-light' : 'bg-transparent border-gray-600 text-muted-dark hover:bg-white/10 hover:border-primary'}`}
+                    >
+                        {t('allModules')}
+                    </button>
+                    <button
+                        onClick={() => setFilterActive(true)}
+                        className={`flex items-center gap-2 px-4 py-2 text-xs uppercase border-2 transition-colors ${filterActive ? 'bg-primary text-white border-primary-light' : 'bg-transparent border-gray-600 text-muted-dark hover:bg-white/10 hover:border-primary'}`}
+                    >
+                        <StarIcon className="w-4 h-4" />
+                        {t('favorites')}
+                    </button>
+                </div>
+                
+                <div className="relative w-full h-full flex-grow">
+                    <h1 className="sr-only">{t('navSectorMap')}</h1>
+                    <SectorMap
+                        bodies={celestialBodies}
+                        onSelectBody={handleSelectBody}
+                        activeBodyId={missionTarget?.id}
+                        favorites={favorites}
+                        onToggleFavorite={handleToggleFavorite}
+                        filterActive={filterActive}
+                    />
+                </div>
+
+                {missionTarget && !studyingBody && (
+                    <MissionBriefingPanel
+                        body={missionTarget}
+                        onLaunch={handleLaunchMission}
+                        onClose={handleCloseBriefing}
+                    />
+                )}
+
+                {studyingBody && (
+                    <ModuleView 
+                        body={studyingBody} 
+                        onClose={handleCloseModuleView} 
+                        onNextModule={handleNextModule}
+                    />
+                )}
+
+                <ChatbotWidget selectedBody={studyingBody} />
             </div>
-            
-            <div className="relative w-full h-full flex-grow">
-                <h1 className="sr-only">{t('navSectorMap')}</h1>
-                <SectorMap
-                    bodies={celestialBodies}
-                    onSelectBody={handleSelectBody}
-                    activeBodyId={missionTarget?.id}
-                    favorites={favorites}
-                    onToggleFavorite={handleToggleFavorite}
-                    filterActive={filterActive}
-                />
-            </div>
-
-            {missionTarget && !studyingBody && (
-                <MissionBriefingPanel
-                    body={missionTarget}
-                    onLaunch={handleLaunchMission}
-                    onClose={handleCloseBriefing}
-                />
-            )}
-
-            {studyingBody && (
-                <ModuleView 
-                    body={studyingBody} 
-                    onClose={handleCloseModuleView} 
-                    onNextModule={handleNextModule}
-                />
-            )}
-
-            <ChatbotWidget selectedBody={studyingBody} />
-        </div>
+        </>
     );
 };
 

@@ -1,4 +1,5 @@
 
+
 // Fix: Create the i18n data object and export it to resolve module errors.
 const i18nData = {
   pt: {
@@ -205,12 +206,20 @@ const i18nData = {
     'explanation.phy2': 'O Ampere, ou amp, é a unidade base de corrente elétrica no Sistema Internacional de Unidades (SI).',
     
     // Dados Mock - Medalhas
-    'badge.streak-3.title': 'Em Chamas',
+    'badge.streak-3.title': 'Aquecendo',
     'badge.streak-3.description': 'Responda 3 perguntas corretamente em sequência.',
+    'badge.streak-5.title': 'Em Chamas',
+    'badge.streak-5.description': 'Responda 5 perguntas corretamente em sequência.',
     'badge.correct-5.title': 'Conhecedor',
     'badge.correct-5.description': 'Responda 5 perguntas corretamente no total.',
+    'badge.correct-20.title': 'Estrela em Ascensão',
+    'badge.correct-20.description': 'Responda 20 perguntas corretamente no total.',
     'badge.score-100.title': 'Perfeccionista',
     'badge.score-100.description': 'Obtenha 100% em uma sessão de prática com pelo menos 5 perguntas.',
+    'badge.study-5.title': 'Explorador Cósmico',
+    'badge.study-5.description': 'Complete 5 módulos de estudo.',
+    'badge.perf-avg-80.title': 'Cadete Consistente',
+    'badge.perf-avg-80.description': 'Mantenha uma pontuação média geral de 80% ou mais.',
 
     // Dados Mock - Quizzes
     'quiz.cell_theory_q1.q': 'Qual das seguintes opções NÃO faz parte da Teoria Celular?',
@@ -433,12 +442,20 @@ const i18nData = {
     'explanation.phy2': 'The Ampere, or amp, is the base unit of electric current in the International System of Units (SI).',
     
     // Mock Data - Badges
-    'badge.streak-3.title': 'On Fire',
+    'badge.streak-3.title': 'Warming Up',
     'badge.streak-3.description': 'Answer 3 questions correctly in a row.',
+    'badge.streak-5.title': 'On Fire',
+    'badge.streak-5.description': 'Answer 5 questions correctly in a row.',
     'badge.correct-5.title': 'Knowledgeable',
     'badge.correct-5.description': 'Answer 5 questions correctly in total.',
+    'badge.correct-20.title': 'Rising Star',
+    'badge.correct-20.description': 'Answer 20 questions correctly in total.',
     'badge.score-100.title': 'Perfectionist',
     'badge.score-100.description': 'Get 100% in a practice session with at least 5 questions.',
+    'badge.study-5.title': 'Cosmic Explorer',
+    'badge.study-5.description': 'Complete 5 study modules.',
+    'badge.perf-avg-80.title': 'Consistent Cadet',
+    'badge.perf-avg-80.description': 'Maintain an overall average score of 80% or more.',
 
     // Mock Data - Quizzes
     'quiz.cell_theory_q1.q': 'Which of the following is NOT part of the Cell Theory?',
@@ -661,12 +678,20 @@ const i18nData = {
     'explanation.phy2': 'El Amperio, o amp, es la unidad base de la corriente eléctrica en el Sistema Internacional de Unidades (SI).',
 
     // Datos Falsos - Insignias
-    'badge.streak-3.title': 'En Racha',
+    'badge.streak-3.title': 'Calentando',
     'badge.streak-3.description': 'Responde 3 preguntas correctamente seguidas.',
+    'badge.streak-5.title': 'En Racha',
+    'badge.streak-5.description': 'Responde 5 preguntas correctamente seguidas.',
     'badge.correct-5.title': 'Conocedor',
     'badge.correct-5.description': 'Responde 5 preguntas correctamente en total.',
+    'badge.correct-20.title': 'Estrella en Ascenso',
+    'badge.correct-20.description': 'Responde 20 preguntas correctamente en total.',
     'badge.score-100.title': 'Perfeccionista',
     'badge.score-100.description': 'Obtén el 100% en una sesión de práctica con al menos 5 preguntas.',
+    'badge.study-5.title': 'Explorador Cósmico',
+    'badge.study-5.description': 'Completa 5 módulos de estudio.',
+    'badge.perf-avg-80.title': 'Cadete Consistente',
+    'badge.perf-avg-80.description': 'Mantén una puntuación media general del 80% o más.',
 
     // Datos Falsos - Cuestionarios
     'quiz.cell_theory_q1.q': '¿Cuál de los siguientes NO forma parte de la Teoría Celular?',
