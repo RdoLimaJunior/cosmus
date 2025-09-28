@@ -14,6 +14,7 @@ const Practice = lazy(() => import('./screens/Practice'));
 const Performance = lazy(() => import('./screens/Performance'));
 const Settings = lazy(() => import('./screens/Settings'));
 const About = lazy(() => import('./screens/About'));
+const UserManual = lazy(() => import('./screens/UserManual'));
 
 const LoadingFallback: React.FC = () => (
     <div className="flex items-center justify-center min-h-screen bg-background-dark">
@@ -39,6 +40,7 @@ const App: React.FC = () => {
                   <Route path="/performance" element={<Performance />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/manual" element={<UserManual />} />
                 </Route>
               </Routes>
             </Suspense>

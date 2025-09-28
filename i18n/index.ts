@@ -17,6 +17,7 @@ const i18nData = {
     navPerformance: 'Desempenho',
     navSettings: 'Configurações',
     navAbout: 'Sobre',
+    navUserManual: 'Manual do Usuário',
 
     // Progresso do Usuário
     level: 'Nível',
@@ -127,6 +128,19 @@ const i18nData = {
     'pwa.prompt.title': 'Instale o COSMUS para uma experiência completa!',
     'pwa.prompt.install': 'Instalar',
     'pwa.prompt.dismiss': 'Depois',
+
+    // Manual do Usuário
+    'userManual.title': 'Manual do Usuário',
+    'userManual.navigation.title': 'Navegação',
+    'userManual.navigation.content': 'Use a barra de navegação inferior (em dispositivos móveis) ou superior (em desktops) para alternar entre as seções principais: Mapa do Setor (Estudo), Prática, Desempenho e Configurações.',
+    'userManual.study.title': 'Estudo (Mapa do Setor)',
+    'userManual.study.content': 'Explore o sistema solar para aprender. Comece pelo Sol e desbloqueie novos corpos celestes completando os módulos. Cada módulo contém lições e um quiz. Use o Tutor IA para tirar dúvidas.',
+    'userManual.practice.title': 'Prática',
+    'userManual.practice.content': 'Escolha uma matéria (Biologia, Química ou Física) para testar seus conhecimentos com questões de múltipla escolha. Acertar perguntas lhe concede XP e ajuda a desbloquear medalhas.',
+    'userManual.performance.title': 'Desempenho',
+    'userManual.performance.content': 'Acompanhe seu progresso. Veja seu resumo de desempenho gerado por IA, seu gráfico de progresso, pontuação média e as medalhas que você ganhou.',
+    'userManual.settings.title': 'Configurações',
+    'userManual.settings.content': 'Personalize sua experiência. Mude o tema, configure lembretes de estudo, altere o idioma e acesse a tela "Sobre".',
 
     // Dados Mock - Corpos Celestes
     'body.sol.title': 'Sol',
@@ -258,6 +272,7 @@ const i18nData = {
     navPerformance: 'Performance',
     navSettings: 'Settings',
     navAbout: 'About',
+    navUserManual: 'User Manual',
 
     // User Progress
     level: 'Level',
@@ -368,6 +383,19 @@ const i18nData = {
     'pwa.prompt.title': 'Install COSMUS for the full experience!',
     'pwa.prompt.install': 'Install',
     'pwa.prompt.dismiss': 'Later',
+
+    // User Manual
+    'userManual.title': 'User Manual',
+    'userManual.navigation.title': 'Navigation',
+    'userManual.navigation.content': 'Use the bottom navigation bar (on mobile) or the top navigation bar (on desktop) to switch between the main sections: Sector Map (Study), Practice, Performance, and Settings.',
+    'userManual.study.title': 'Study (Sector Map)',
+    'userManual.study.content': 'Explore the solar system to learn. Start at the Sun and unlock new celestial bodies by completing modules. Each module contains lessons and a quiz. Use the AI Tutor to ask questions.',
+    'userManual.practice.title': 'Practice',
+    'userManual.practice.content': 'Choose a subject (Biology, Chemistry, or Physics) to test your knowledge with multiple-choice questions. Answering questions correctly earns you XP and helps unlock badges.',
+    'userManual.performance.title': 'Performance',
+    'userManual.performance.content': 'Track your progress. View your AI-generated performance summary, your progress chart, overall average score, and the badges you have earned.',
+    'userManual.settings.title': 'Settings',
+    'userManual.settings.content': 'Customize your experience. Change the theme, set up study reminders, change the language, and access the "About" screen.',
 
     // Mock Data - Celestial Bodies
     'body.sol.title': 'Sun',
@@ -499,6 +527,7 @@ const i18nData = {
     navPerformance: 'Rendimiento',
     navSettings: 'Ajustes',
     navAbout: 'Acerca de',
+    navUserManual: 'Manual de Usuario',
 
     // Progreso del Usuario
     level: 'Nivel',
@@ -609,6 +638,19 @@ const i18nData = {
     'pwa.prompt.title': '¡Instala COSMUS para una experiencia completa!',
     'pwa.prompt.install': 'Instalar',
     'pwa.prompt.dismiss': 'Más tarde',
+    
+    // Manual de Usuario
+    'userManual.title': 'Manual de Usuario',
+    'userManual.navigation.title': 'Navegación',
+    'userManual.navigation.content': 'Usa la barra de navegación inferior (en dispositivos móviles) o superior (en escritorio) para cambiar entre las secciones principales: Mapa del Sector (Estudio), Práctica, Rendimiento y Ajustes.',
+    'userManual.study.title': 'Estudio (Mapa del Sector)',
+    'userManual.study.content': 'Explora el sistema solar para aprender. Comienza en el Sol y desbloquea nuevos cuerpos celestes completando los módulos. Cada módulo contiene lecciones y un cuestionario. Usa el Tutor de IA para hacer preguntas.',
+    'userManual.practice.title': 'Práctica',
+    'userManual.practice.content': 'Elige una materia (Biología, Química o Física) para poner a prueba tus conocimientos con preguntas de opción múltiple. Responder preguntas correctamente te otorga XP y ayuda a desbloquear insignias.',
+    'userManual.performance.title': 'Rendimiento',
+    'userManual.performance.content': 'Sigue tu progreso. Consulta tu resumen de rendimiento generado por IA, tu gráfico de progreso, la puntuación media general y las insignias que has ganado.',
+    'userManual.settings.title': 'Ajustes',
+    'userManual.settings.content': 'Personaliza tu experiencia. Cambia el tema, configura recordatorios de estudio, cambia el idioma y accede a la pantalla "Acerca de".',
 
     // Datos Falsos - Cuerpos Celestes
     'body.sol.title': 'Sol',

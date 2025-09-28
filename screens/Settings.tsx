@@ -8,6 +8,7 @@ import { MoonIcon } from '../components/icons/MoonIcon';
 import { BellIcon } from '../components/icons/BellIcon';
 import { LogoutIcon } from '../components/icons/LogoutIcon';
 import { InfoIcon } from '../components/icons/InfoIcon';
+import { QuestionMarkCircleIcon } from '../components/icons/QuestionMarkCircleIcon';
 
 type Language = 'pt' | 'en' | 'es';
 
@@ -183,13 +184,22 @@ const Settings: React.FC = () => {
             {/* General Settings */}
             <div>
                 <h2 className="text-xl text-white mb-4 uppercase tracking-widest">{t('general')}</h2>
-                 <Link
-                    to="/about"
-                    className="w-full text-left p-3 border-2 bg-surface-dark border-gray-600 hover:bg-primary/20 hover:border-primary-light text-text-dark flex items-center gap-3 transition-colors text-sm"
-                >
-                    <InfoIcon className="w-5 h-5" />
-                    {t('navAbout')}
-                </Link>
+                <div className="space-y-2">
+                    <Link
+                        to="/about"
+                        className="w-full text-left p-3 border-2 bg-surface-dark border-gray-600 hover:bg-primary/20 hover:border-primary-light text-text-dark flex items-center gap-3 transition-colors text-sm"
+                    >
+                        <InfoIcon className="w-5 h-5" />
+                        {t('navAbout')}
+                    </Link>
+                    <Link
+                        to="/manual"
+                        className="w-full text-left p-3 border-2 bg-surface-dark border-gray-600 hover:bg-primary/20 hover:border-primary-light text-text-dark flex items-center gap-3 transition-colors text-sm"
+                    >
+                        <QuestionMarkCircleIcon className="w-5 h-5" />
+                        {t('navUserManual')}
+                    </Link>
+                </div>
             </div>
 
             {/* Logout Section */}
