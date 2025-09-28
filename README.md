@@ -1,3 +1,4 @@
+
 # Cosmus: Guia de Estudos Galáctico
 
 Cosmus is a gamified educational application designed to help students prepare for the Vanda International Science Competition. It features study materials presented as a journey through the solar system, practice tests, performance tracking, and an AI-powered tutor chatbot.
@@ -63,9 +64,30 @@ O repositório está organizado para funcionar com o **AI Studio**, permitindo q
 ## 🚀 Tech Stack
 
 - **Frontend:** React, TypeScript, Tailwind CSS
+- **Build Tool:** Vite
 - **AI:** Google Gemini API (`@google/genai`)
 - **Routing:** React Router
 - **State Management:** React Context API
+
+## 🛠️ Build Setup
+
+This project is built using Vite. To run it locally or build for production, follow these steps:
+
+1.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
+2.  **Run Development Server:**
+    ```bash
+    npm run dev
+    ```
+    This will start a local development server with Hot Module Replacement (HMR).
+
+3.  **Build for Production:**
+    ```bash
+    npm run build
+    ```
+    This command will bundle the application and output the static files to the `dist` directory, ready for deployment.
 
 ## 🏛️ Spec-Driven Development (SDD)
 
@@ -88,17 +110,6 @@ Este projeto utiliza o AI Studio como copiloto SDD:
 
 This web application is built with modern web technologies and runs directly in the browser.
 
-1.  No build step is required for local development.
-2.  Simply serve the project's root directory using a local web server.
-3.  **Important:** The application requires a valid Google Gemini API key. This key must be set in the `index.html` file, replacing the `API_KEY_PLACEHOLDER` value.
-
-```html
-<!-- in index.html -->
-<script>
-  window.process = {
-    env: {
-      API_KEY: 'YOUR_REAL_API_KEY_HERE' // Replace placeholder
-    }
-  };
-</script>
-```
+1.  **Build the project:** Before serving, ensure you have run the build command as described in the "Build Setup" section.
+2.  Serve the `dist` directory using a local web server or deploy it to a static hosting provider.
+3.  **Important:** The application requires a valid Google Gemini API key. This key must be available as an environment variable named `API_KEY` in the environment where you run the `npm run build` command (e.g., in your Netlify/Vercel settings or in a local `.env` file).
