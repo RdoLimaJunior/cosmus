@@ -26,3 +26,32 @@ This document outlines the step-by-step plan to develop and integrate the User M
     - Test deep linking by navigating directly to `/#/manual` while logged in.
 3.  **Responsiveness Testing**: Ensure the layout is responsive and looks good on both mobile and desktop views.
 4.  **i18n Testing**: Switch languages in the Settings and verify that all text on the User Manual screen and the settings link updates correctly.
+
+
+# Cosmus Plan
+
+## Sprint 1: Fundação
+- Criar e validar a Constituição do projeto.
+- Definir casos de uso (Specify).
+- Configurar agente no AI Studio.
+
+## Sprint 2: UX e Interface
+- Refinar wireframes existentes.
+- Testar interações gamificadas.
+- Validar jornada socrática de aprendizado.
+
+## Sprint 3: Conteúdo Educacional
+- Criar módulos de física, química, biologia e astronomia.
+- Definir quizzes e desafios.
+- Integrar gamificação.
+
+## Sprint 4: Testes e Validação
+- Testar experiência com estudantes.
+- Recolher feedback.
+- Ajustar IA para maior engajamento e precisão.
+
+## Sprint 5: Escala
+- Expandir base de conteúdos.
+- Preparar para integração com plataformas de ensino.
+- Documentar roadmap de evolução.
+

@@ -5,6 +5,12 @@
 - **Name**: Cosmus SDD
 - **Description**: Agente cognitivo do projeto Cosmus para suportar jornadas científicas, garantindo consistência metodológica, clareza de linguagem e apoio prático no processo de pesquisa, UX e inovação.
 
+
+## Project Purpose
+O **Cosmus** é uma experiência imersiva de educação e estudos com IA, que utiliza método socrático e gamificação para ajudar o aluno a estudar sobre física, astronomia, química e biologia.
+
+O objetivo é transformar o aprendizado científico em uma jornada interativa e envolvente.
+
 ---
 
 ## 2. Guiding Principles

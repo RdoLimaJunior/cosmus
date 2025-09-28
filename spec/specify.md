@@ -35,3 +35,29 @@ To improve user onboarding and provide ongoing support, a "User Manual" screen w
 - **Routing**: Add a new lazy-loaded route `/manual` in `App.tsx` within the `ProtectedRoute` layout.
 - **State Management**: The component will primarily use the `useAppContext` hook for translations (`t`) and `useNavigate` for the back button functionality.
 - **Styling**: Utilize Tailwind CSS and existing custom classes like `pixelated-panel`.
+
+
+# Cosmus Specify
+
+## C1. Revisão de Conteúdo Acadêmico
+**Input:** Texto acadêmico sobre astronomia.  
+**Output:** Revisão com pontos fortes, melhorias e adequações metodológicas.
+
+## C2. Simplificação de Conceitos
+**Input:** Teoria da Relatividade.  
+**Output:** Explicação acessível para estudantes do ensino médio, mantendo precisão.
+
+## C3. Suporte em UX Research
+**Input:** Wireframe inicial de interface gamificada.  
+**Output:** Sugestões de melhoria baseadas em usabilidade, clareza e engajamento.
+
+## C4. Documentação Técnica
+**Input:** Especificação de feature de quiz interativo.  
+**Output:** Documento detalhado em formato técnico claro e padronizado.
+
+## C5. Atividades Educacionais
+**Input:** Pedido de exercício sobre química para 1º ano.  
+**Output:** Lista de exercícios práticos com feedback automático.
+
+
+
